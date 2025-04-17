@@ -242,7 +242,7 @@ void ez_template_extras() {
 
  inline pros::Motor intake_motor(2);
  inline pros::Motor conveyor_motor(5);
-
+ inline pros::MotorGroup climber_motors({-15, 10});
 
  bool intakeNConveyor = false;
  bool catch_intake;
@@ -255,7 +255,9 @@ void opcontrol() {
       // Gives you some extras to make EZ-Template ezier
       ez_template_extras();
 
-      // chassis.opcontrol_tank();  // Tank control
+      // 
+
+      // Conveyor & Intake Control
       if(master.get_digital(DIGITAL_L2)==1){
         if(catch_intake == false){
           catch_intake = true;
@@ -266,7 +268,7 @@ void opcontrol() {
       else if(catch_intake == true){
         catch_intake = false;
       }
-
+      // Conveyor & Intake movement code
       if(intakeNConveyor){
         intake_motor.move(127);
         conveyor_motor.move(127);
@@ -276,14 +278,15 @@ void opcontrol() {
         conveyor_motor.move(0);
       }
 
-      chassis.opcontrol_arcade_standard(ez::SPLIT);   // Standard split arcade
-      // chassis.opcontrol_arcade_standard(ez::SINGLE);  // Standard single arcade
-      // chassis.opcontrol_arcade_flipped(ez::SPLIT);    // Flipped split arcade
-      // chassis.opcontrol_arcade_flipped(ez::SINGLE);   // Flipped single arcade
+      // TEMPORARY Climber Control
+      if (master.get_digital(DIGITAL_R2)==1){
+        climber_motors.move(127);
+      }
+      else if (master.get_digital(DIGITAL_R1) == 1){
+        climber_motors.move(-127);
+      }
 
-      // . . .
-      // Put more user control code here!
-      // . . .
+      chassis.opcontrol_arcade_standard(ez::SPLIT);   // Standard split arcade
 
       pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
     }
