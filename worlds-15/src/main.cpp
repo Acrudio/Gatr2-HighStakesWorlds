@@ -244,6 +244,12 @@ void ez_template_extras() {
  inline pros::Motor conveyor_motor(5);
  inline pros::MotorGroup climber_motors({-15, 10});
 
+ inline pros::adi::DigitalOut climber_piston('A');
+ bool climber_latch = 0;
+ bool climber_on = 0;
+
+
+
  bool intakeNConveyor = false;
  bool catch_intake;
 
@@ -278,13 +284,25 @@ void opcontrol() {
         conveyor_motor.move(0);
       }
 
-      // TEMPORARY Climber Control
+      // TEMPORARY Climber Motor Control
       if (master.get_digital(DIGITAL_R2)==1){
         climber_motors.move(127);
       }
       else if (master.get_digital(DIGITAL_R1) == 1){
         climber_motors.move(-127);
       }
+
+      // Climber Piston
+      if(master.get_digital(DIGITAL_B)==1){
+        if(!climber_latch){
+          climber_on = !climber_on;
+          climber_latch = true;
+        }
+      }
+      else{
+        climber_latch = false;
+      }
+      climber_piston.set_value(climber_on);
 
       chassis.opcontrol_arcade_standard(ez::SPLIT);   // Standard split arcade
 
