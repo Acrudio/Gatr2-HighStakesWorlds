@@ -248,8 +248,6 @@ void ez_template_extras() {
  bool climber_latch = 0;
  bool climber_on = 0;
 
-
-
  bool intakeNConveyor = false;
  bool catch_intake;
 
@@ -290,6 +288,9 @@ void opcontrol() {
       }
       else if (master.get_digital(DIGITAL_R1) == 1){
         climber_motors.move(-127);
+      }
+      else{
+        climber_motors.move(0);
       }
 
       // Climber Piston
