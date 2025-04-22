@@ -248,6 +248,10 @@ void ez_template_extras() {
  bool climber_latch = 0;
  bool climber_on = 0;
 
+ inline pros::adi::DigitalOut clamp_piston('F');
+ bool piston_latch = 0;
+ bool piston_on = 0;
+
  bool intakeNConveyor = false;
  bool catch_intake;
 
@@ -304,6 +308,18 @@ void opcontrol() {
         climber_latch = false;
       }
       climber_piston.set_value(climber_on);
+
+      // Clamp Piston
+      if(master.get_digital(DIGITAL_Y)==1){
+        if(!piston_latch){
+          piston_on = !piston_on;
+          piston_latch = true;
+        }
+      }
+      else{
+        piston_latch = false;
+      }
+      clamp_piston.set_value(piston_on);
 
       chassis.opcontrol_arcade_standard(ez::SPLIT);   // Standard split arcade
 
