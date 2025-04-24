@@ -1,4 +1,5 @@
 #include "main.h"
+// #include "GATR_PIDTuner.hpp"
 
 /////
 // For installation, upgrading, documentations, and tutorials, check out our website!
@@ -20,9 +21,14 @@ ez::Drive chassis(
 //  - you should get positive values on the encoders going FORWARD and RIGHT
 // - `2.75` is the wheel diameter
 // - `4.0` is the distance from the center of the wheel to the center of the robot
-// ez::tracking_wheel horiz_tracker(8, 2.75, 4.0);  // This tracking wheel is perpendicular to the drive wheels
-// ez::tracking_wheel vert_tracker(9, 2.75, 4.0);   // This tracking wheel is parallel to the drive wheels
 
+double vert_trackerWheelThickness_D = 0.9420;
+double vert_distToEdgeOfBot = 1.6440;
+double vert_distToCenter = 75-vert_distToEdgeOfBot+vert_trackerWheelThickness_D/2;
+
+// ez::tracking_wheel horiz_tracker(16, 2.71, 4.0);  // This tracking wheel is perpendicular to the drive wheels
+ez::tracking_wheel vert_left_tracker(20, 2.71, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
+ez::tracking_wheel vert_right_tracker(-21, 2.71, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -42,7 +48,9 @@ void initialize() {
   // Look at your vertical tracking wheel and decide if it's to the left or right of the center of the robot
   //  - change `left` to `right` if the tracking wheel is to the right of the centerline
   //  - ignore this if you aren't using a vertical tracker
-  // chassis.odom_tracker_left_set(&vert_tracker);
+  chassis.odom_tracker_left_set(&vert_left_tracker);
+  chassis.odom_tracker_right_set(&vert_right_tracker);
+
 
   // Configure your chassis controls
   chassis.opcontrol_curve_buttons_toggle(true);   // Enables modifying the controller curve with buttons on the joysticks
@@ -239,6 +247,9 @@ void ez_template_extras() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
+
+// pros::Task Pid_LoggingTask(() -> Pid_LoggingOperation_TASK(chassis, chassis.odom_pose_get().y));
+
 
  inline pros::Motor intake_motor(2);
  inline pros::Motor conveyor_motor(5);
