@@ -1,5 +1,5 @@
 #include "main.h"
-// #include "GATR_PIDTuner.hpp"
+#include "../../PID_Tuner/GATR_Tuner.cpp"
 
 /////
 // For installation, upgrading, documentations, and tutorials, check out our website!
@@ -9,10 +9,10 @@
 // Chassis constructor
 ez::Drive chassis(
     // These are your drive motors, the first motor is used for sensing!
-    {-19, 18, -14, -8},     // Left Chassis Ports (negative port will reverse it!)
-    {-17, 16, 13, 9},  // Right Chassis Ports (negative port will reverse it!)
+    {-11, 6, -5, -3},     // Left Chassis Ports (negative port will reverse it!)
+    {-10, 4, 8, 12},  // Right Chassis Ports (negative port will reverse it!)
 
-    12,      // IMU Port
+    21,      // IMU Port
     2.65,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
     200);   // Wheel RPM = cartridge * (motor gear / wheel gear)
 
@@ -27,8 +27,8 @@ double vert_distToEdgeOfBot = 1.6440;
 double vert_distToCenter = 75-vert_distToEdgeOfBot+vert_trackerWheelThickness_D/2;
 
 // ez::tracking_wheel horiz_tracker(16, 2.71, 4.0);  // This tracking wheel is perpendicular to the drive wheels
-ez::tracking_wheel vert_left_tracker(20, 2.71, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
-ez::tracking_wheel vert_right_tracker(-21, 2.71, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
+ez::tracking_wheel vert_left_tracker(2, 2.71, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
+ez::tracking_wheel vert_right_tracker(-1, 2.71, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -248,12 +248,16 @@ void ez_template_extras() {
  * task, not resume it from where it left off.
  */
 
-// pros::Task Pid_LoggingTask(() -> Pid_LoggingOperation_TASK(chassis, chassis.odom_pose_get().y));
+// pros::Task Pid_LoggingTask([]() -> void{
+//   Pid_LoggingOperation_TASK(chassis.pid_drive_constants_get(), "TestLogging", []() -> double {
+//     return chassis.odom_pose_get().y;
+//   },40);
+// });
 
 
- inline pros::Motor intake_motor(2);
- inline pros::Motor conveyor_motor(5);
- inline pros::MotorGroup climber_motors({-15, 10});
+ inline pros::Motor intake_motor(19);
+ inline pros::Motor conveyor_motor(18);
+ inline pros::MotorGroup climber_motors({-9, 13});
 
  inline pros::adi::DigitalOut climber_piston('A');
  bool climber_latch = 0;
