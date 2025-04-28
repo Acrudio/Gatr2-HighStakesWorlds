@@ -26,9 +26,9 @@ double vert_trackerWheelThickness_D = 0.9420;
 double vert_distToEdgeOfBot = 1.6440;
 double vert_distToCenter = 75-vert_distToEdgeOfBot+vert_trackerWheelThickness_D/2;
 
-// ez::tracking_wheel horiz_tracker(16, 2.71, 4.0);  // This tracking wheel is perpendicular to the drive wheels
+ez::tracking_wheel horiz_tracker(1, 2.71, 0);  // This tracking wheel is perpendicular to the drive wheels
 ez::tracking_wheel vert_left_tracker(2, 2.71, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
-ez::tracking_wheel vert_right_tracker(-1, 2.71, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
+ez::tracking_wheel vert_right_tracker(-15, 2.71, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -50,6 +50,8 @@ void initialize() {
   //  - ignore this if you aren't using a vertical tracker
   chassis.odom_tracker_left_set(&vert_left_tracker);
   chassis.odom_tracker_right_set(&vert_right_tracker);
+  chassis.odom_tracker_back_set(&horiz_tracker);
+
 
 
   // Configure your chassis controls
@@ -66,20 +68,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Drive\n\nDrive forward and come back", drive_example},
-      {"Turn\n\nTurn 3 times.", turn_example},
-      {"Drive and Turn\n\nDrive forward, turn, come back", drive_and_turn},
-      {"Drive and Turn\n\nSlow down during drive", wait_until_change_speed},
-      {"Swing Turn\n\nSwing in an 'S' curve", swing_example},
-      {"Motion Chaining\n\nDrive forward, turn, and come back, but blend everything together :D", motion_chaining},
-      {"Combine all 3 movements", combining_movements},
-      {"Interference\n\nAfter driving forward, robot performs differently if interfered or not", interfered_example},
-      {"Simple Odom\n\nThis is the same as the drive example, but it uses odom instead!", odom_drive_example},
-      {"Pure Pursuit\n\nGo to (0, 30) and pass through (6, 10) on the way.  Come back to (0, 0)", odom_pure_pursuit_example},
-      {"Pure Pursuit Wait Until\n\nGo to (24, 24) but start running an intake once the robot passes (12, 24)", odom_pure_pursuit_wait_until_example},
-      {"Boomerang\n\nGo to (0, 24, 45) then come back to (0, 0, 0)", odom_boomerang_example},
-      {"Boomerang Pure Pursuit\n\nGo to (0, 24, 45) on the way to (24, 24) then come back to (0, 0, 0)", odom_boomerang_injected_pure_pursuit_example},
-      {"Measure Offsets\n\nThis will turn the robot a bunch of times and calculate your offsets for your tracking wheels.", measure_offsets},
+      {"Drive PID Tuning\n\nDrives the bot forwards 10 inches at max speed.", measure_offsets},
   });
 
   // Initialize chassis and auton selector
@@ -248,22 +237,16 @@ void ez_template_extras() {
  * task, not resume it from where it left off.
  */
 
-// pros::Task Pid_LoggingTask([]() -> void{
-//   Pid_LoggingOperation_TASK(chassis.pid_drive_constants_get(), "TestLogging", []() -> double {
-//     return chassis.odom_pose_get().y;
-//   },40);
-// });
+pros::Task Pid_LoggingTask([]() -> void{
+  Pid_LoggingOperation_TASK(chassis.pid_drive_constants_get(), "TestLogging", []() -> double {
+    return chassis.odom_pose_get().y;
+  },40);
+});
 
 
- inline pros::Motor intake_motor(19);
- inline pros::Motor conveyor_motor(18);
- inline pros::MotorGroup climber_motors({-9, 13});
-
- inline pros::adi::DigitalOut climber_piston('A');
  bool climber_latch = 0;
  bool climber_on = 0;
 
- inline pros::adi::DigitalOut clamp_piston('F');
  bool piston_latch = 0;
  bool piston_on = 0;
 
@@ -277,7 +260,6 @@ void opcontrol() {
   while (true) {
       // Gives you some extras to make EZ-Template ezier
       ez_template_extras();
-
       // 
 
       // Conveyor & Intake Control

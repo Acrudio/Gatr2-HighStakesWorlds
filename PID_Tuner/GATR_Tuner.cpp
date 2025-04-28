@@ -1,5 +1,3 @@
-#include "GATR_PIDtuner.hpp"
-
 // Lucas' PID Logging FIles
 char* CreatePIDLogFile(float _kP, float _kI, float _kD, float _target, char* _taskName){
     char timeBuffer[100];       // Character array to store the formatted time
@@ -39,6 +37,8 @@ char* CreatePIDLogFile(float _kP, float _kI, float _kD, float _target, char* _ta
   void LogPidValue(char *fileName, double _time, double _value){
     FILE *fp;
     fp = fopen(fileName, "a"); // open the file
+
+    
   
     if(fp != NULL){
       char buffer[50];

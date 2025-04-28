@@ -3,7 +3,14 @@
 #include "EZ-Template/api.hpp"
 #include "api.h"
 extern Drive chassis;
-// inline pros::Motor intake_motor(1);
+
+inline pros::adi::DigitalOut clamp_piston('F');
+inline pros::Motor intake_motor(19);
+inline pros::Motor conveyor_motor(18);
+inline pros::MotorGroup climber_motors({-9, 13});
+
+inline pros::adi::DigitalOut climber_piston('A');
+
 // inline pros::Motor intake(5);
 // 
 
