@@ -1,5 +1,4 @@
 #include "main.h"
-#include "../../PID_Tuner/GATR_Tuner.cpp"
 
 /////
 // For installation, upgrading, documentations, and tutorials, check out our website!
@@ -68,7 +67,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Drive PID Tuning\n\nDrives the bot forwards 10 inches at max speed.", measure_offsets},
+      {"Drive PID Tuning\n\nDrives the bot forwards 10 inches at max speed.", DrivePID_Tune},
   });
 
   // Initialize chassis and auton selector
@@ -237,11 +236,6 @@ void ez_template_extras() {
  * task, not resume it from where it left off.
  */
 
-// pros::Task Pid_LoggingTask([]() -> void{
-//   Pid_LoggingOperation_TASK(chassis.pid_drive_constants_get(), "TestLogging", []() -> double {
-//     return chassis.odom_pose_get().y;
-//   },40);
-// });
 
 
  bool climber_latch = 0;

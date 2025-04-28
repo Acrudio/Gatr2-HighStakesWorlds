@@ -1,5 +1,7 @@
 #include "main.h"
 
+#include "../../PID_Tuner/GATR_Tuner.cpp"
+
 /////
 // For installation, upgrading, documentations, and tutorials, check out our website!
 // https://ez-robotics.github.io/EZ-Template/
@@ -11,6 +13,13 @@ const int TURN_SPEED = 90;
 const int SWING_SPEED = 110;
 
 void DrivePID_Tune();
+
+pros::Task Pid_LoggingTask([]() -> void{
+  Pid_LoggingOperation_TASK(chassis.pid_drive_constants_get(), []() -> double {
+    return chassis.odom_pose_get().y;
+  },10);
+});
+
 
 ///
 // Constants
@@ -48,6 +57,11 @@ void default_constants() {
   chassis.odom_boomerang_dlead_set(0.625);     // This handles how aggressive the end of boomerang motions are
 
   chassis.pid_angle_behavior_set(ez::shortest);  // Changes the default behavior for turning, this defaults it to the shortest path there
+}
+
+void DrivePID_Tune(){
+  chassis.pid_odom_set(10_in, DRIVE_SPEED, true);
+  chassis.pid_wait();
 }
 
 ///
