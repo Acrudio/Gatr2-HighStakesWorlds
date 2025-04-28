@@ -237,11 +237,11 @@ void ez_template_extras() {
  * task, not resume it from where it left off.
  */
 
-pros::Task Pid_LoggingTask([]() -> void{
-  Pid_LoggingOperation_TASK(chassis.pid_drive_constants_get(), "TestLogging", []() -> double {
-    return chassis.odom_pose_get().y;
-  },40);
-});
+// pros::Task Pid_LoggingTask([]() -> void{
+//   Pid_LoggingOperation_TASK(chassis.pid_drive_constants_get(), "TestLogging", []() -> double {
+//     return chassis.odom_pose_get().y;
+//   },40);
+// });
 
 
  bool climber_latch = 0;
