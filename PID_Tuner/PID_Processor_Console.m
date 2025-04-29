@@ -19,6 +19,7 @@ clear; clc;
 
 % 1. Grab CSV from clipboard (or from your input loop)
 csvText = clipboard('paste');
+rawLines = splitlines(csvText);
 
 % starting from your filtered string array:
 lines = splitlines(csvText);                 
@@ -29,9 +30,10 @@ filtered = lines(keep);
 csvText = erase(filtered, "[PID]");  
 csvText  = strjoin(csvText, newline);  % stitch back into one big string
 
+dataStartLine = 3;
 
 lines = splitlines(csvText);        % gives you a string array of each line
-rest  = lines(3:end);         % everything but the first two
+rest  = lines(dataStartLine:end);         % everything but the first two
 csvText  = strjoin(rest, newline);  % stitch back into one big string
 
 % 2. Write it out to a temp .csv
@@ -63,12 +65,14 @@ hold on;
 plot(data.Time, data.TrackingValue, "r")
 
 % Extract target data from second line of csv
+
 targetLine = lines(2);
 targetValue = targetLine{1}(3:length(targetLine{1}));
-yline(str2double(targetValue), "b-.");
+targetValue = str2double(targetValue);
+yline(targetValue, "b");
 xlabel("Time [ms]");
 ylabel("Tracking Value [?]")
-legend("Tracking Data", sprintf("Target (%s)", targetValue))
+legend("Tracking Data", sprintf("Target (%.1f)", targetValue))
 
 
 % Set title to the PID constants from first line of csv
@@ -76,3 +80,24 @@ titleLine = lines(1);
 titleText = sprintf("%s",titleLine{1}(3:length(titleLine{1})));
 title(titleText,'Interpreter', 'none');
 fprintf("\nLoaded succesfully!")
+
+% % XY Exit Detection
+% % Automatic Exit Detection
+% mask = contains(rawLines, "XY: "); % find the line containing the exit 
+% foundExitLine = rawLines(mask); % Mask out the line containing the exit
+% B = circshift(mask, -1); % Shift the mask back to get the time line before this
+% timeContainingLine = rawLines(B); % Pull out just the time containing line
+% % Extract the exit time
+% numStr = regexp(timeContainingLine, '[-+]?\d*\.?\d+', 'match', 'once'); % Take the exit time from that line
+% XY_ExitTime = str2double(numStr);
+
+[XY_ExitTime, XY_ExitMode] = FindExitTime(rawLines, "XY: ");
+xline(XY_ExitTime,"g","DisplayName",sprintf("XY Exit (%.1f) - %s", XY_ExitTime,XY_ExitMode{1})); % graph the line
+
+[Angle_ExitTime, Angle_ExitMode] = FindExitTime(rawLines, "Angle: ");
+xline(Angle_ExitTime,"k-.","DisplayName",sprintf("Angle Exit (%.1f) - %s", Angle_ExitTime, Angle_ExitMode{1})); % graph the line
+
+smallExit = input("\nExit Range: ");
+yline(targetValue + smallExit, "b-.", "DisplayName",sprintf("Upper Range Gate (+ %.3f)", smallExit))
+yline(targetValue - smallExit, "c-.", "DisplayName",sprintf("Lower Range Gate (- %.3f)", smallExit))
+

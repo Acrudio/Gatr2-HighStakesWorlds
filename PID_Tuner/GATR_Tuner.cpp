@@ -12,12 +12,13 @@ void Pid_LoggingOperation_TASK(ez::PID::Constants constants, function<double(voi
   printf("Started PID Logging Task!\n");
 
   printf("[PID]# Kp:%.2f Ki:%.5f Kd:%.2f\n[PID]# %.2f\n", constants.kp, constants.ki, constants.kd, target);
+
   printf("[PID]Time,TrackingValue\n");
 
   while (true)
   {
     printf("[PID]%.5f, %.5f\n", (double) pros::millis(), trackingFunction());
-    pros::delay(100); 
+    pros::delay(25); 
   }
 }
 
