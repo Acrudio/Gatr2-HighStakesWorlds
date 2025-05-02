@@ -248,6 +248,7 @@ void ez_template_extras() {
 
  bool intakeNConveyor = false;
  bool catch_intake;
+ int intakeDir = 1;
 
 void opcontrol() {
   // This is preference to what you like to drive on
@@ -259,11 +260,11 @@ void opcontrol() {
       // 
 
       // Conveyor & Intake Control
-      if(master.get_digital(DIGITAL_L2)==1){
+      if(master.get_digital(DIGITAL_L2)==1 || master.get_digital(DIGITAL_L1)==1){
+        intakeDir = master.get_digital(DIGITAL_L2)==1 ? 1 : -1;
         if(catch_intake == false){
           catch_intake = true;
           intakeNConveyor = !intakeNConveyor;
-          intake_motor.move(127);
         }
       }
       else if(catch_intake == true){
@@ -271,8 +272,8 @@ void opcontrol() {
       }
       // Conveyor & Intake movement code
       if(intakeNConveyor){
-        intake_motor.move(127);
-        conveyor_motor.move(127);
+        intake_motor.move(127*intakeDir);
+        conveyor_motor.move(127*intakeDir);
       }
       else{
         intake_motor.move(0);
