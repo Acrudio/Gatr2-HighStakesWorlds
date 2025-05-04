@@ -16,7 +16,7 @@ clear; clc;
 % fprintf("Loading %s...",fileName)
 
 % Reading data
-
+chassis.drive_imu_scaler_set(1);
 % 1. Grab CSV from clipboard (or from your input loop)
 csvText = clipboard('paste');
 rawLines = splitlines(csvText);

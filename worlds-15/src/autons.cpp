@@ -17,7 +17,7 @@ void DrivePID_Tune();
 pros::Task Pid_LoggingTask([]() -> void{
   Pid_LoggingOperation_TASK(chassis.pid_drive_constants_get(), []() -> double {
     return chassis.odom_pose_get().theta;
-  },90);
+  },-90);
 });
 
 
@@ -28,16 +28,16 @@ void default_constants() {
   // P, I, D, and Start I
   chassis.pid_drive_constants_set(10, 0, 5);         // Fwd/rev constants, used for odom and non odom motions
   chassis.pid_heading_constants_set(11.0, 0.0, 20.0);        // Holds the robot straight while going forward without odom
-  chassis.pid_turn_constants_set(3.0, 0.025, 20.0, 15);     // Turn in place constants
+  chassis.pid_turn_constants_set(3.0, 0.025, 20.0, 15);     // 3.0, 0.025, 20.0, 15
   chassis.pid_swing_constants_set(6.0, 0.0, 65.0);           // Swing constants
-  chassis.pid_odom_angular_constants_set(4.75, 0, 100);    // Angular control for odom motions | 6.5, 0.0, 52.5
+  chassis.pid_odom_angular_constants_set(6.5, 0.0, 52.5);    // Angular control for odom motions | 6.5, 0.0, 52.5
   chassis.pid_odom_boomerang_constants_set(5.8, 0.0, 32.5);  // Angular control for boomerang motions
 
   // Exit conditions
-  chassis.pid_turn_exit_condition_set(90_ms, 1_deg, 250_ms, 7_deg, 500_ms, 500_ms);
+  chassis.pid_turn_exit_condition_set(90_ms, 1_deg, 250_ms, 4_deg, 500_ms, 500_ms);
   chassis.pid_swing_exit_condition_set(90_ms, 3_deg, 250_ms, 7_deg, 500_ms, 500_ms);
   chassis.pid_drive_exit_condition_set(90_ms*2, 0.5_in, 250_ms, .25_in, 500_ms, 500_ms);// DONT EDIT THIS
-  chassis.pid_odom_turn_exit_condition_set(90_ms, 1_deg, 250_ms, 7_deg, 500_ms, 750_ms);
+  chassis.pid_odom_turn_exit_condition_set(90_ms, 1_deg, 250_ms, 7_deg, 500_ms, 750_ms); // 90_ms, 1_deg, 250_ms, 7_deg, 500_ms, 750_ms
   chassis.pid_odom_drive_exit_condition_set(90_ms*2, 0.5_in, 500_ms, 1_in, 500_ms, 500_ms);
   chassis.pid_turn_chain_constant_set(3_deg);
   chassis.pid_swing_chain_constant_set(5_deg);
@@ -57,6 +57,8 @@ void default_constants() {
   chassis.odom_boomerang_dlead_set(0.625);     // This handles how aggressive the end of boomerang motions are
 
   chassis.pid_angle_behavior_set(ez::shortest);  // Changes the default behavior for turning, this defaults it to the shortest path there
+
+  chassis.drive_imu_scaler_set(1);
 
   // LAST BOT CONSTANTS
 }
@@ -82,6 +84,12 @@ void TurnPID_Tune_90(){
   chassis.pid_turn_set(90, TURN_SPEED);
   chassis.pid_wait();
 }
+void TurnPID_Tune_LeftPoint(){
+  double angle = atan2(-24,0)*180/M_PI;
+  
+  chassis.pid_turn_set(angle, TURN_SPEED);
+  chassis.pid_wait();
+}
 void TurnPID_Tune_180(){
   chassis.pid_turn_set(180, TURN_PRECISION_SPEED);
   chassis.pid_wait();
@@ -93,9 +101,33 @@ void SwingPID_Tune(){
   chassis.pid_wait();
 }
 
-void TurnBiasPID_Tune(){
-  chassis.pid_odom_set({{{0,24}, rev, 110}}, true); 
+void Odom_TurnAndDrive(ez::odom movement, int turnSpeed, int driveSpeed, bool turnSlew = true, bool driveSlew = true){
+  // Turn
+  vector target = {movement.target.x, movement.target.y};
+  printf("X GATR target is {%.3f,%.3f}\n",target[0], target[1]);
+  vector currentPos = {chassis.odom_pose_get().x, chassis.odom_pose_get().y};
+  printf("X GATR current pos is {%.3f,%.3f}\n",currentPos[0], currentPos[1]);
+
+  vector point = {target[0]-currentPos[0], target[1]-currentPos[1]};
+  printf("X GATR calculated vector is {%.3f,%.3f}\n",point[0], point[1]);
+
+
+  double angle = atan2(point[0], point[1])*180/M_PI;
+  printf("X GATR turning to %.3f\n",angle);
+  chassis.pid_turn_set(angle, turnSpeed, turnSlew);
   chassis.pid_wait();
+
+  // Drive
+  printf("X GATR moving to {%.3f, %.3f}\n",movement.target.x,movement.target.y);
+  chassis.pid_drive_set(sqrt(pow(point[0],2)+pow(point[0],2)), driveSpeed);
+  chassis.pid_wait();
+}
+
+void TurnBiasPID_Tune(){
+  Odom_TurnAndDrive({{24, 24}, fwd}, TURN_SPEED, DRIVE_SPEED);
+
+  // chassis.pid_turn_set({-24,0}, fwd, TURN_SPEED);
+  // chassis.pid_wait();
 }
 
 ///

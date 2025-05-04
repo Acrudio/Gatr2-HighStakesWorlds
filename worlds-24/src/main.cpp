@@ -28,8 +28,8 @@ double distFudge = 1.1491119;
 double wheelDiameter = 2.65*distFudge;
 
 ez::tracking_wheel horiz_tracker(1, wheelDiameter, 0);  // This tracking wheel is perpendicular to the drive wheels
-ez::tracking_wheel vert_left_tracker(2, wheelDiameter, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
-ez::tracking_wheel vert_right_tracker(-15, wheelDiameter, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
+ez::tracking_wheel vert_left_tracker(13, wheelDiameter, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
+ez::tracking_wheel vert_right_tracker(14, wheelDiameter, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *

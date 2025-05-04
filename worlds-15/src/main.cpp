@@ -27,8 +27,8 @@ double vert_distToCenter = 75-vert_distToEdgeOfBot+vert_trackerWheelThickness_D/
 double distFudge = 1.1491119;
 double wheelDiameter = 2.65*distFudge;
 
-ez::tracking_wheel horiz_tracker(1, wheelDiameter, 0);  // This tracking wheel is perpendicular to the drive wheels
-ez::tracking_wheel vert_left_tracker(13, wheelDiameter, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
+// ez::tracking_wheel horiz_tracker(1, wheelDiameter, 0);  // This tracking wheel is perpendicular to the drive wheels
+ez::tracking_wheel vert_left_tracker(13, wheelDiameter, -vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
 ez::tracking_wheel vert_right_tracker(14, wheelDiameter, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -51,7 +51,7 @@ void initialize() {
   //  - ignore this if you aren't using a vertical tracker
   chassis.odom_tracker_left_set(&vert_left_tracker);
   chassis.odom_tracker_right_set(&vert_right_tracker);
-  chassis.odom_tracker_back_set(&horiz_tracker);
+  // chassis.odom_tracker_back_set(&horiz_tracker);
 
 
 
@@ -69,7 +69,8 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Turn PID Tuning\n\nMoves the bot to {24,24}", TurnBiasPID_Tune},
+      {"Turn PID Tuning\n\nMoves the bot to {-24,0}", TurnBiasPID_Tune},
+      {"Turn PID Tuning\n\nTurns the bot to {-24,0}", TurnPID_Tune_LeftPoint},
       {"Swing PID Tuning\n\nSwings the bot 90deg", SwingPID_Tune},
       {"Drive PID Tuning\n\nRotates the bot with PID 90 degrees", TurnPID_Tune_90},
       {"Drive PID Tuning\n\nRotates the bot with PID 180 degrees.", TurnPID_Tune_180},
