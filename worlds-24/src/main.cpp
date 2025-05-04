@@ -319,7 +319,7 @@ void opcontrol() {
       else if (master.get_digital(DIGITAL_A)==1) mode = LB_Mode::Primed;
       else if (master.get_digital(DIGITAL_X)==1) mode = LB_Mode::AboveDunked;
       else if (master.get_digital(DIGITAL_Y)==1) mode = LB_Mode::Dunked;
-      // else if (master.get_digital(DIGITAL_UP)==1 || master.get_digital(DIGITAL_DOWN)==1) mode = LB_Mode::Manual;
+      else if (master.get_digital(DIGITAL_UP)==1 || master.get_digital(DIGITAL_DOWN)==1) mode = LB_Mode::Manual;
       else if (master.get_digital(DIGITAL_RIGHT)==1) mode = LB_Mode::AllianceAboveDunked;
 
 
@@ -346,7 +346,7 @@ void opcontrol() {
         else ladybrown_motors.move(0);
       break;
 
-      if (master.get_digital(DIGITAL_LEFT)==1) ladybrown_motors.tare_position_all();
+      // if (master.get_digital(DIGITAL_LEFT)==1) ladybrown_motors.tare_position_all();
       
       default:
         break;
@@ -377,7 +377,7 @@ void opcontrol() {
       clamp_piston.set_value(piston_on);
 
       // Doinker Piston
-      if(master.get_digital(DIGITAL_UP)==1){
+      if(master.get_digital(DIGITAL_LEFT)==1){
         if(!doinker){
           doinker = true;
           doinker_on = !doinker_on;
