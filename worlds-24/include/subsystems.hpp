@@ -11,6 +11,7 @@ inline pros::MotorGroup ladybrown_motors({-20, 16});
 inline pros::Rotation ladybrown_encoder(15);
 inline pros::adi::DigitalOut doinker_pistion('H');
 inline pros::adi::DigitalOut climber_piston('F');
+inline pros::Imu dummyIMU(21);
 
 // inline pros::Motor intake(5);
 // 

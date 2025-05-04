@@ -28,8 +28,8 @@ double distFudge = 1.1491119;
 double wheelDiameter = 2.65*distFudge;
 
 ez::tracking_wheel horiz_tracker(1, wheelDiameter, 0);  // This tracking wheel is perpendicular to the drive wheels
-ez::tracking_wheel vert_left_tracker(13, wheelDiameter, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
-ez::tracking_wheel vert_right_tracker(14, wheelDiameter, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
+ez::tracking_wheel vert_left_tracker(9, wheelDiameter, -vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
+ez::tracking_wheel vert_right_tracker(7, wheelDiameter, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -39,6 +39,7 @@ ez::tracking_wheel vert_right_tracker(14, wheelDiameter, vert_distToCenter);   /
 void initialize() {
   // Print our branding over your terminal :D
   ez::ez_template_print();
+  
 
   pros::delay(500);  // Stop the user from doing anything while legacy ports configure
 
@@ -52,8 +53,6 @@ void initialize() {
   chassis.odom_tracker_left_set(&vert_left_tracker);
   chassis.odom_tracker_right_set(&vert_right_tracker);
   chassis.odom_tracker_back_set(&horiz_tracker);
-
-
 
   // Configure your chassis controls
   chassis.opcontrol_curve_buttons_toggle(true);   // Enables modifying the controller curve with buttons on the joysticks
@@ -69,13 +68,28 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Drive PID Tuning\n\nDrives the bot forwards 10 inches at max speed.", DrivePID_Tune},
+    {"Turn PID Tuning\n\nMoves the bot to {-24,0}", TurnBiasPID_Tune},
+    {"Turn PID Tuning\n\nTurns the bot to {-24,0}", TurnPID_Tune_LeftPoint},
+    {"Swing PID Tuning\n\nSwings the bot 90deg", SwingPID_Tune},
+    {"Drive PID Tuning\n\nRotates the bot with PID 90 degrees", TurnPID_Tune_90},
+    {"Drive PID Tuning\n\nRotates the bot with PID 180 degrees.", TurnPID_Tune_180},
+    {"Drive PID Tuning\n\nDrives the bot forwards 5 inches at max speed.", DrivePID_Tune_5},
+    {"Drive PID Tuning\n\nDrives the bot forwards 10 inches at max speed.", DrivePID_Tune_10},
+    {"Drive PID Tuning\n\nDrives the bot forwards 60 inches at max speed.", DrivePID_Tune_20},
   });
 
   // Initialize chassis and auton selector
   chassis.initialize();
   ez::as::initialize();
   master.rumble(chassis.drive_imu_calibrated() ? "." : "---");
+  chassis.drive_imu_scaler_set(1);
+
+
+  // Custom IMU
+  // dummyIMU.reset(true);
+
+  printf("IMU Heading: %.3f",dummyIMU.get_heading());
+
 }
 
 /**
@@ -274,6 +288,8 @@ void opcontrol() {
   defaultOpControlSpeed = chassis.opcontrol_speed_max_get();
 
   while (true) {
+    printf("IMU Heading: %.3f",dummyIMU.get_heading()); // debugging the dummy imu
+
       if(intakeDir == -1) intakeNConveyor = false;
 
       // Gives you some extras to make EZ-Template ezier

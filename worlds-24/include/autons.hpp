@@ -4,6 +4,18 @@ void default_constants();
 
 void DrivePID_Tune();
 
+void DrivePID_Tune_20();
+void DrivePID_Tune_10();
+void DrivePID_Tune_5();
+
+void TurnPID_Tune_90();
+void TurnPID_Tune_180();
+
+void TurnBiasPID_Tune();
+void SwingPID_Tune();
+
+void TurnPID_Tune_LeftPoint();
+
 void drive_example();
 void turn_example();
 void drive_and_turn();
