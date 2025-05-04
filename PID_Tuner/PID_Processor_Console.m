@@ -91,11 +91,23 @@ fprintf("\nLoaded succesfully!")
 % numStr = regexp(timeContainingLine, '[-+]?\d*\.?\d+', 'match', 'once'); % Take the exit time from that line
 % XY_ExitTime = str2double(numStr);
 
+
 [XY_ExitTime, XY_ExitMode] = FindExitTime(rawLines, "XY: ");
-xline(XY_ExitTime,"g","DisplayName",sprintf("XY Exit (%.1f) - %s", XY_ExitTime,XY_ExitMode{1})); % graph the line
+if ~isempty(XY_ExitMode)
+    xline(XY_ExitTime,"g","DisplayName",sprintf("XY Exit (%.1f) - %s", XY_ExitTime,XY_ExitMode{1})); % graph the line
+end
+
+[Turn_ExitTime, Turn_ExitMode] = FindExitTime(rawLines, "Turn: ");
+if ~isempty(Turn_ExitMode)
+    xline(Turn_ExitTime,"g","DisplayName",sprintf("Turn Exit (%.1f) - %s", Turn_ExitTime,Turn_ExitMode{1})); % graph the line
+end
+
 
 [Angle_ExitTime, Angle_ExitMode] = FindExitTime(rawLines, "Angle: ");
-xline(Angle_ExitTime,"k-.","DisplayName",sprintf("Angle Exit (%.1f) - %s", Angle_ExitTime, Angle_ExitMode{1})); % graph the line
+if ~isempty(Angle_ExitMode)
+    xline(Angle_ExitTime,"k-.","DisplayName",sprintf("Angle Exit (%.1f) - %s", Angle_ExitTime, Angle_ExitMode{1})); % graph the line
+end
+
 
 smallExit = input("\nExit Range: ");
 yline(targetValue + smallExit, "b-.", "DisplayName",sprintf("Upper Range Gate (+ %.3f)", smallExit))

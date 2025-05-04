@@ -12,7 +12,7 @@ ez::Drive chassis(
     {10, -4, 8, 12},  // Right Chassis Ports (negative port will reverse it!)
 
     21,      // IMU Port
-    2.65,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
+    2.65*1.5,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
     200);   // Wheel RPM = cartridge * (motor gear / wheel gear)
 
 // Uncomment the trackers you're using here!
@@ -28,8 +28,8 @@ double distFudge = 1.1491119;
 double wheelDiameter = 2.65*distFudge;
 
 ez::tracking_wheel horiz_tracker(1, wheelDiameter, 0);  // This tracking wheel is perpendicular to the drive wheels
-ez::tracking_wheel vert_left_tracker(2, wheelDiameter, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
-ez::tracking_wheel vert_right_tracker(-15, wheelDiameter, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
+ez::tracking_wheel vert_left_tracker(13, wheelDiameter, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
+ez::tracking_wheel vert_right_tracker(14, wheelDiameter, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -69,7 +69,13 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Drive PID Tuning\n\nDrives the bot forwards 10 inches at max speed.", DrivePID_Tune},
+      {"Turn PID Tuning\n\nMoves the bot to {24,24}", TurnBiasPID_Tune},
+      {"Swing PID Tuning\n\nSwings the bot 90deg", SwingPID_Tune},
+      {"Drive PID Tuning\n\nRotates the bot with PID 90 degrees", TurnPID_Tune_90},
+      {"Drive PID Tuning\n\nRotates the bot with PID 180 degrees.", TurnPID_Tune_180},
+      {"Drive PID Tuning\n\nDrives the bot forwards 5 inches at max speed.", DrivePID_Tune_5},
+      {"Drive PID Tuning\n\nDrives the bot forwards 10 inches at max speed.", DrivePID_Tune_10},
+      {"Drive PID Tuning\n\nDrives the bot forwards 60 inches at max speed.", DrivePID_Tune_20},
   });
 
   // Initialize chassis and auton selector
