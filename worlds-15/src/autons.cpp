@@ -134,6 +134,45 @@ void FinalDemoRoute(){
   chassis.pid_wait();
 }
 
+void OuterRoute(){
+  chassis.pid_odom_set({{0,-5}, rev, DRIVE_SPEED},true);
+  chassis.pid_wait();
+
+  GATR_TurnAndMove({20,-54},rev);
+  clamp_piston.set_value(true);
+
+  chassis.pid_odom_set({{9.5,-24.7}, fwd, DRIVE_SPEED},true);
+  chassis.pid_wait();
+
+  intake_motor.move(127);
+  conveyor_motor.move(127);
+  GATR_TurnAndMove({23,-17},fwd); // Score first donut nearest to the negative corner
+  pros::delay(1000);
+
+  chassis.pid_turn_set({23.33,-0.90}, fwd,TURN_SPEED); // Turn to put the goal down a bit away
+  chassis.pid_wait();
+  clamp_piston.set_value(false); // release the first goal
+  intake_motor.move(0);
+  conveyor_motor.move(0);
+
+  GATR_TurnAndMove({-17.8,-17},rev); // Drive to the alliance stake goal in rev
+  clamp_piston.set_value(true); // grab the alliance stake goal
+
+  chassis.pid_swing_set(LEFT_SWING, 0, SWING_SPEED);
+
+  intake_motor.move(127);
+  conveyor_motor.move(127);
+  GATR_TurnAndMove({-24.86,-2.71},fwd); // Get alliance stake ring
+
+  GATR_TurnAndMove({-68.91,-17.94},fwd); // Move and get the positive corner ring
+
+  GATR_TurnAndMove({-78.7,-5.30},rev); // Move and get the positive corner ring
+  clamp_piston.set_value(false); // release the second goal
+
+  pros::delay(2000);
+
+}
+
 ///
 // Drive Example
 ///
