@@ -11,6 +11,8 @@ inline pros::MotorGroup climber_motors({-9, 13});
 
 inline pros::adi::DigitalOut climber_piston('A');
 
+inline pros::Imu gatr_IMU(21);
+
 // inline pros::Motor intake(5);
 // 
 

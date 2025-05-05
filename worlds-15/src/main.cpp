@@ -12,8 +12,8 @@ ez::Drive chassis(
     {10, -4, 8, 12},  // Right Chassis Ports (negative port will reverse it!)
 
     21,      // IMU Port
-    2.65*1.5,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
-    200);   // Wheel RPM = cartridge * (motor gear / wheel gear)
+    2.65,  // Wheel Diameter (Remember, 4" wheels without screw holes are actually 4.125!)
+    500);   // Wheel RPM = cartridge * (motor gear / wheel gear)
 
 // Uncomment the trackers you're using here!
 // - `8` and `9` are smart ports (making these negative will reverse the sensor)
@@ -27,9 +27,21 @@ double vert_distToCenter = 75-vert_distToEdgeOfBot+vert_trackerWheelThickness_D/
 double distFudge = 1.1491119;
 double wheelDiameter = 2.65*distFudge;
 
-// ez::tracking_wheel horiz_tracker(1, wheelDiameter, 0);  // This tracking wheel is perpendicular to the drive wheels
-ez::tracking_wheel vert_left_tracker(13, wheelDiameter, -vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
-ez::tracking_wheel vert_right_tracker(14, wheelDiameter, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
+// pros::Task ManualIMU_Task([]() -> void{
+//   while (true){
+//     ez::pose CurrentPose = chassis.odom_pose_get();
+
+//     ez::pose dummyPose(0,0,CurrentPose.theta);
+//     printf("Heading: %.3f",chassis.odom_pose_get().theta);
+
+
+//     pros::delay(ez::util::DELAY_TIME); 
+//   }
+// });
+
+ez::tracking_wheel horiz_tracker(1, wheelDiameter, 0);  // This tracking wheel is perpendicular to the drive wheels
+// ez::tracking_wheel vert_left_tracker(2, wheelDiameter, -vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
+// ez::tracking_wheel vert_right_tracker(15, wheelDiameter, vert_distToCenter);   // This tracking wheel is parallel to the drive wheels
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -49,11 +61,9 @@ void initialize() {
   // Look at your vertical tracking wheel and decide if it's to the left or right of the center of the robot
   //  - change `left` to `right` if the tracking wheel is to the right of the centerline
   //  - ignore this if you aren't using a vertical tracker
-  chassis.odom_tracker_left_set(&vert_left_tracker);
-  chassis.odom_tracker_right_set(&vert_right_tracker);
-  // chassis.odom_tracker_back_set(&horiz_tracker);
-
-
+  // chassis.odom_tracker_left_set(&vert_left_tracker);
+  // chassis.odom_tracker_right_set(&vert_right_tracker);
+  chassis.odom_tracker_back_set(&horiz_tracker);
 
   // Configure your chassis controls
   chassis.opcontrol_curve_buttons_toggle(true);   // Enables modifying the controller curve with buttons on the joysticks
@@ -69,10 +79,10 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"Turn PID Tuning\n\nMoves the bot to {-24,0}", TurnBiasPID_Tune},
+      {"Final Demo Route\n\nMoves in an L shape", FinalDemoRoute},
+      {"Drive PID Tuning\n\nRotates the bot with PID 90 degrees", TurnPID_Tune_90},
       {"Turn PID Tuning\n\nTurns the bot to {-24,0}", TurnPID_Tune_LeftPoint},
       {"Swing PID Tuning\n\nSwings the bot 90deg", SwingPID_Tune},
-      {"Drive PID Tuning\n\nRotates the bot with PID 90 degrees", TurnPID_Tune_90},
       {"Drive PID Tuning\n\nRotates the bot with PID 180 degrees.", TurnPID_Tune_180},
       {"Drive PID Tuning\n\nDrives the bot forwards 5 inches at max speed.", DrivePID_Tune_5},
       {"Drive PID Tuning\n\nDrives the bot forwards 10 inches at max speed.", DrivePID_Tune_10},
@@ -264,8 +274,7 @@ void opcontrol() {
   while (true) {
       // Gives you some extras to make EZ-Template ezier
       ez_template_extras();
-      // 
-
+      
       // Conveyor & Intake Control
       if(master.get_digital(DIGITAL_L2)==1 || master.get_digital(DIGITAL_L1)==1){
         intakeDir = master.get_digital(DIGITAL_L2)==1 ? 1 : -1;
