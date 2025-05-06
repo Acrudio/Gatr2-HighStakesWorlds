@@ -79,7 +79,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"15 Outer Route\n\nRushes for the outer ring", OuterRoute},
+      {"15 Outer Route\n\nRushes for the Under Goal", UnderRoute},
       {"Final Demo Route\n\nMoves in an L shape", FinalDemoRoute},
       {"Drive PID Tuning\n\nRotates the bot with PID 90 degrees", TurnPID_Tune_90},
       {"Turn PID Tuning\n\nTurns the bot to {-24,0}", TurnPID_Tune_LeftPoint},

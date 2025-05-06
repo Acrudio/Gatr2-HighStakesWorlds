@@ -173,6 +173,47 @@ void OuterRoute(){
 
 }
 
+void UnderRoute(){
+  chassis.pid_odom_set({{0,-35}, rev, DRIVE_SPEED},true); // Pull up a bit
+  chassis.pid_wait();
+
+  chassis.pid_odom_set({{0,-28}, fwd, DRIVE_SPEED},true); // Pull back
+  chassis.pid_wait();
+
+  GATR_TurnAndMove({-17,-53},rev); // Drive to mid goal and clamp
+  clamp_piston.set_value(true);
+
+  intake_motor.move(127); // turn to the ring stack nearest the neg. corner and score 
+  conveyor_motor.move(127);
+  GATR_TurnAndMove({23,-17},fwd); 
+  pros::delay(1000);
+
+  chassis.pid_turn_set({23.33,-0.90}, fwd,TURN_SPEED); // Turn to put the goal down a bit away
+  chassis.pid_wait();
+  clamp_piston.set_value(false); // release the first goal
+  intake_motor.move(0);
+  conveyor_motor.move(0);
+
+  GATR_TurnAndMove({-17.8,-17},rev); // Drive to the alliance stake goal in rev
+  clamp_piston.set_value(true); // grab the alliance stake goal
+
+  chassis.pid_swing_set(LEFT_SWING, 0, SWING_SPEED);
+
+  intake_motor.move(127);
+  conveyor_motor.move(127);
+  GATR_TurnAndMove({-24.86,-2.71},fwd); // Get alliance stake ring
+
+  GATR_TurnAndMove({-68.91,-17.94},fwd); // Move and get the positive corner ring
+
+  GATR_TurnAndMove({-78.7,-5.30},rev); // Move and get the positive corner ring
+  clamp_piston.set_value(false); // release the second goal
+
+  pros::delay(2000);
+
+
+  pros::delay(500);
+}
+
 ///
 // Drive Example
 ///
