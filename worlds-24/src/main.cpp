@@ -344,7 +344,7 @@ void opcontrol() {
       switch (mode)
       {
       case LB_Mode::Down:
-        ladybrown_motors.move_absolute(0+offset,123);
+        ladybrown_motors.move_absolute(0,123);
         break;
       case LB_Mode::Primed:
         ladybrown_motors.move_absolute(170+offset,123);
