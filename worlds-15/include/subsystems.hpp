@@ -10,6 +10,8 @@ inline pros::Motor conveyor_motor(18);
 inline pros::MotorGroup climber_motors({-9, 13});
 
 inline pros::adi::DigitalOut climber_piston('A');
+inline pros::adi::DigitalOut passiveHook_piston('B');
+
 
 inline pros::Imu gatr_IMU(21);
 

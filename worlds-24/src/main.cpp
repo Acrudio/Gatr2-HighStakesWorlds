@@ -50,8 +50,8 @@ void initialize() {
   // Look at your vertical tracking wheel and decide if it's to the left or right of the center of the robot
   //  - change `left` to `right` if the tracking wheel is to the right of the centerline
   //  - ignore this if you aren't using a vertical tracker
-  chassis.odom_tracker_left_set(&vert_left_tracker);
-  chassis.odom_tracker_right_set(&vert_right_tracker);
+  // chassis.odom_tracker_left_set(&vert_left_tracker);
+  // chassis.odom_tracker_right_set(&vert_right_tracker);
   chassis.odom_tracker_back_set(&horiz_tracker);
 
   // Configure your chassis controls
@@ -68,6 +68,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
+    {"24 Auton\n\nGrabs the outer goal", OuterRush},
     {"Turn PID Tuning\n\nMoves the bot to {-24,0}", TurnBiasPID_Tune},
     {"Turn PID Tuning\n\nTurns the bot to {-24,0}", TurnPID_Tune_LeftPoint},
     {"Swing PID Tuning\n\nSwings the bot 90deg", SwingPID_Tune},
@@ -279,6 +280,7 @@ void ez_template_extras() {
  LB_Mode mode = LB_Mode::Down;
  
  int defaultOpControlSpeed;
+ int offset = 100;
 
  // L2 prepare LB
 
@@ -335,26 +337,26 @@ void opcontrol() {
       else if (master.get_digital(DIGITAL_A)==1) mode = LB_Mode::Primed;
       else if (master.get_digital(DIGITAL_X)==1) mode = LB_Mode::AboveDunked;
       else if (master.get_digital(DIGITAL_Y)==1) mode = LB_Mode::Dunked;
-      else if (master.get_digital(DIGITAL_UP)==1 || master.get_digital(DIGITAL_DOWN)==1) mode = LB_Mode::Manual;
+      // else if (master.get_digital(DIGITAL_UP)==1 || master.get_digital(DIGITAL_DOWN)==1) mode = LB_Mode::Manual;
       else if (master.get_digital(DIGITAL_RIGHT)==1) mode = LB_Mode::AllianceAboveDunked;
 
 
       switch (mode)
       {
       case LB_Mode::Down:
-        ladybrown_motors.move_absolute(0,123);
+        ladybrown_motors.move_absolute(0+offset,123);
         break;
       case LB_Mode::Primed:
-        ladybrown_motors.move_absolute(150,123);
+        ladybrown_motors.move_absolute(170+offset,123);
         break;
       case LB_Mode::AboveDunked:
-        ladybrown_motors.move_absolute(1300,123);
+        ladybrown_motors.move_absolute(1300+offset,123);
         break;
       case LB_Mode::Dunked:
-        ladybrown_motors.move_absolute(1800,123);
+        ladybrown_motors.move_absolute(1900+offset,123);
         break;
       case LB_Mode::AllianceAboveDunked:
-        ladybrown_motors.move_absolute(1600,123);
+        ladybrown_motors.move_absolute(1600+offset,123);
         break;
       case LB_Mode::Manual:
         if(master.get_digital(DIGITAL_UP)==1) ladybrown_motors.move(50);

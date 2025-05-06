@@ -59,6 +59,13 @@ void default_constants() {
   chassis.pid_angle_behavior_set(ez::shortest);  // Changes the default behavior for turning, this defaults it to the shortest path there
 }
 
+void GATR_TurnAndMove(ez::pose _pose, ez::drive_directions _dir, bool _waitLast = true, int _turnSpeed=TURN_SPEED/2, int _driveSpeed=DRIVE_SPEED){
+  chassis.pid_turn_set(_pose, _dir,_turnSpeed);
+  chassis.pid_wait();
+  chassis.pid_odom_set({_pose, _dir, _driveSpeed},true);
+  if(_waitLast) chassis.pid_wait();
+}
+
 int SMALLDIST_SPEED = 110/4; // Originally for 5 inch movements
 int TURN_PRECISION_SPEED = 110/2; // Useful for 180 degree movements or when precision is needed
 
@@ -88,6 +95,63 @@ void TurnPID_Tune_LeftPoint(){
 void TurnPID_Tune_180(){
   chassis.pid_turn_set(180, TURN_PRECISION_SPEED);
   chassis.pid_wait();
+}
+
+void OuterRush(){
+  chassis.pid_targets_reset();                // Resets PID targets to 0
+  chassis.drive_imu_reset();                  // Reset gyro position to 0
+  chassis.drive_sensor_reset();               // Reset drive sensors to 0
+  chassis.odom_xyt_set(0_in, 0_in, 0_deg);    // Set the current position, you can start at a specific position with this
+  chassis.drive_brake_set(MOTOR_BRAKE_COAST);  // Set motors to hold.  This helps autonomous consistency
+
+
+  // GATR_TurnAndMove({.02, 12}, fwd); // Drive to close
+  chassis.pid_drive_constants_set(30, 0, 5);         // Fwd/rev constants, used for odom and non odom motions 
+  chassis.pid_odom_set({{.02, 12}, fwd, 127});
+  chassis.pid_wait_until(9.25);
+
+  default_constants();
+
+  doinker_pistion.set_value(true);
+  chassis.pid_swing_set(LEFT_SWING,25,SWING_SPEED); // Swing and grab the goal
+  chassis.drive_brake_set(MOTOR_BRAKE_HOLD);  // Set motors to hold.  This helps autonomous consistency
+  chassis.pid_wait_quick();
+  
+  chassis.pid_drive_set(-15,DRIVE_SPEED); // Run away with our goal
+  chassis.pid_wait();
+
+  chassis.pid_odom_set(3, DRIVE_SPEED); // Move a bit to unlock
+  chassis.pid_wait();
+  chassis.pid_turn_set(-7.5, TURN_SPEED); // Turn the key to unlock
+  chassis.pid_wait();
+  doinker_pistion.set_value(false);
+  chassis.pid_odom_set(-10, DRIVE_SPEED, true);
+  chassis.pid_wait();
+
+
+  chassis.pid_drive_constants_set(30, 0, 5); // SPEED UP 
+  GATR_TurnAndMove({-7.5,5.19}, rev, true, TURN_SPEED/2, 127); // Reverse into the goal
+  default_constants(); // Reset constants
+  clamp_piston.set_value(true); // Clamp our goal!
+  conveyor_motor.move(127); // Run our conveyor
+  pros::delay(2000);
+  clamp_piston.set_value(false);
+
+
+  
+
+  // GATR_TurnAndMove({-8.94, 3.12}, fwd);
+  
+  // clamp_piston.set_value(true);
+  // chassis.pid_turn_behavior_set(ccw);
+  // GATR_TurnAndMove({-8.25,5.22}, REV, false);
+  // doinker_pistion.set_value(false);
+  // chassis.pid_turn_behavior_set(shortest);
+  // GATR_TurnAndMove({-7.86,7.53}, REV, false);
+  // clamp_piston.set_value(false);
+  
+
+  pros::delay(2000);
 }
 
 

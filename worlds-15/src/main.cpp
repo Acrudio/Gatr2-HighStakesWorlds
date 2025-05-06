@@ -264,6 +264,9 @@ void ez_template_extras() {
  bool piston_latch = 0;
  bool piston_on = 0;
 
+ bool passiveHook_latch = 0;
+ bool passiveHook_on = 0;
+
  bool intakeNConveyor = false;
  bool catch_intake;
  int intakeDir = 1;
@@ -298,11 +301,14 @@ void opcontrol() {
       }
 
       // TEMPORARY Climber Motor Control
-      if (master.get_digital(DIGITAL_R2)==1){
-        climber_motors.move(127);
-      }
-      else if (master.get_digital(DIGITAL_R1) == 1){
+      if (master.get_digital(DIGITAL_UP)==1){
         climber_motors.move(-127);
+        chassis.drive_set(-127,-127);
+      }
+      else if (master.get_digital(DIGITAL_DOWN) == 1){
+        climber_motors.move(127);
+        chassis.drive_set(127,127);
+
       }
       else{
         climber_motors.move(0);
@@ -319,6 +325,18 @@ void opcontrol() {
         climber_latch = false;
       }
       climber_piston.set_value(climber_on);
+
+      // Passive Hook Piston
+      if(master.get_digital(DIGITAL_A)==1){
+        if(!passiveHook_latch){
+          passiveHook_on = !passiveHook_on;
+          passiveHook_latch = true;
+        }
+      }
+      else{
+        passiveHook_latch = false;
+      }
+      passiveHook_piston.set_value(passiveHook_on);
 
       // Clamp Piston
       if(master.get_digital(DIGITAL_Y)==1){
