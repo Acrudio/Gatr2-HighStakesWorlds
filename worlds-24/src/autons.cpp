@@ -122,18 +122,17 @@ void OuterRush(){
 
   chassis.pid_odom_set(5, 50); // bump the goal a little
   chassis.pid_wait();
-  chassis.pid_swing_set(RIGHT_SWING, -17.20, 50); // Move it with intake
+  chassis.pid_swing_set(RIGHT_SWING, -17.20, 35); // Move it with intake
   chassis.pid_wait();
   doinker_pistion.set_value(false);
   chassis.pid_odom_set(3, 50); // push forward a bit
   chassis.pid_wait();
 
 
-  chassis.pid_odom_set(-7, 50); // push forward a bit
-  chassis.pid_wait();
+  chassis.pid_odom_set(-7, 50); // Back up from goal to get away
+  chassis.pid_wait_quick();
 
 
-  // GATR_TurnAndMove({-7.10, 4.02}, rev); // THIS IS A PROBLEM
   chassis.pid_turn_relative_set(90,50);
   chassis.pid_wait();
   chassis.pid_turn_relative_set(90,50);
@@ -144,50 +143,41 @@ void OuterRush(){
   default_constants();
 
   clamp_piston.set_value(true); // Clamp our goal!
-  pros::delay(500);
-  chassis.pid_odom_set(10, 127); // push forward a bit
+  chassis.pid_odom_set(5, 127); // push forward a bit
   chassis.pid_wait();
 
   // Give the clamp a chance!
   conveyor_motor.move(127);
   intake_motor.move(127);
 
-  pros::delay(1000);
-  clamp_piston.set_value(false); // Clamp our goal!
+  pros::delay(10000);
+  conveyor_motor.move(0);
+  intake_motor.move(0);
+  // clamp_piston.set_value(false); // release goal
 
-
-  // Go to ready 
-  GATR_TurnAndMove({2.5,7.5}, fwd);
-  chassis.pid_odom_set(2, 127); // push forward a bit
-  chassis.pid_wait();
-  chassis.pid_swing_set(LEFT_SWING, 163, 50); 
-  chassis.pid_wait();
-  
-
-  // Run at the corner
-  ez::pose divePos = {10.53,-1.34};
-  chassis.pid_turn_set(divePos, fwd,TURN_SPEED/2);
-  chassis.pid_wait();
   doinker_pistion.set_value(true);
-  chassis.pid_odom_set({divePos, fwd, 70},true);
+
+  // // corner clear
+  // chassis.pid_turn_set(103.34, fwd, 50);
+  // chassis.pid_wait();
+  // chassis.pid_drive_set(30,75);
+  // chassis.pid_wait();
+  // chassis.pid_turn_set(200.4,50); // x:160.4
+  // chassis.pid_wait();
+
+  // // Touch the ladder
+  GATR_TurnAndMove({-8.21,7.21}, fwd, false);
+  chassis.pid_drive_set(15,75);
   chassis.pid_wait();
 
-  chassis.pid_turn_set(251.3,123);
-  chassis.pid_wait();
-
-  GATR_TurnAndMove({5.69,11.72},fwd);
-  GATR_TurnAndMove({11.41,5.97},fwd); // Hit ladder
-
-
-  // GATR_TurnAndMove({-7.74, 4.16}, rev);
-  // chassis.pid_odom_set(-5, DRIVE_SPEED); // Move a bit to unlock
+  // chassis.pid_drive_set(5,75);
   // chassis.pid_wait();
-  // clamp_piston.set_value(true); // Clamp our goal!
-  // chassis.pid_odom_set(5, DRIVE_SPEED); // Move a bit to unlock
+  // chassis.pid_turn_relative_set(90,50);
   // chassis.pid_wait();
-  // conveyor_motor.move(127); // Run our conveyor
-  // pros::delay(2000);
-  // clamp_piston.set_value(false);
+  // chassis.pid_turn_relative_set(90,50);
+  // chassis.pid_wait();
+  // chassis.pid_drive_set(10,50);
+  // chassis.pid_wait();
 }
 
 void oldRoute(){
