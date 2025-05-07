@@ -13,8 +13,8 @@ void FinalDemoRoute();
 void SwingPID_Tune();
 
 void TurnPID_Tune_LeftPoint();
-void OuterRoute();
-void UnderRoute();
+void OuterRoute(double);
+void UnderRoute(double);
 
 void drive_example();
 void turn_example();

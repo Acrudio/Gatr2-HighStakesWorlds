@@ -79,9 +79,10 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      {"15 Under Route\n\nRushes for the Under Goal", UnderRoute},
-      {"15 Outer Route\n\nRushes for the Outer Goal", OuterRoute},
-
+    {"15 Red Under Route\n\nRushes for the Under Goal", []() -> void {return UnderRoute(1); }},    
+    {"15 Red Outer Route\n\nRushes for the Outer Goal", []() -> void {return OuterRoute(1);}},
+      {"15 Blue Under Route\n\nRushes for the Under Goal", []() -> void {return UnderRoute(-1);}},
+      {"15 Blue Outer Route\n\nRushes for the Outer Goal", []() -> void {return OuterRoute(-1);}},
       {"Final Demo Route\n\nMoves in an L shape", FinalDemoRoute},
       {"Drive PID Tuning\n\nRotates the bot with PID 90 degrees", TurnPID_Tune_90},
       {"Turn PID Tuning\n\nTurns the bot to {-24,0}", TurnPID_Tune_LeftPoint},
@@ -316,29 +317,29 @@ void opcontrol() {
         climber_motors.move(0);
       }
 
-      // Climber Piston
-      if(master.get_digital(DIGITAL_B)==1){
-        if(!climber_latch){
-          climber_on = !climber_on;
-          climber_latch = true;
-        }
-      }
-      else{
-        climber_latch = false;
-      }
-      climber_piston.set_value(climber_on);
+      // // Climber Piston
+      // if(master.get_digital(DIGITAL_B)==1){
+      //   if(!climber_latch){
+      //     climber_on = !climber_on;
+      //     climber_latch = true;
+      //   }
+      // }
+      // else{
+      //   climber_latch = false;
+      // }
+      // climber_piston.set_value(climber_on);
 
-      // Passive Hook Piston
-      if(master.get_digital(DIGITAL_A)==1){
-        if(!passiveHook_latch){
-          passiveHook_on = !passiveHook_on;
-          passiveHook_latch = true;
-        }
-      }
-      else{
-        passiveHook_latch = false;
-      }
-      passiveHook_piston.set_value(passiveHook_on);
+      // // Passive Hook Piston
+      // if(master.get_digital(DIGITAL_A)==1){
+      //   if(!passiveHook_latch){
+      //     passiveHook_on = !passiveHook_on;
+      //     passiveHook_latch = true;
+      //   }
+      // }
+      // else{
+      //   passiveHook_latch = false;
+      // }
+      // passiveHook_piston.set_value(passiveHook_on);
 
       // Clamp Piston
       if(master.get_digital(DIGITAL_Y)==1){

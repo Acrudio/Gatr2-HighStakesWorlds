@@ -134,61 +134,146 @@ void FinalDemoRoute(){
   chassis.pid_wait();
 }
 
-void AC_RouteLaterHalf(){
+// void AC_RouteLaterHalf(){
+//   intake_motor.move(127);
+//   conveyor_motor.move(127);
+//   GATR_TurnAndMove({23,-17},fwd); // Score first donut nearest to the negative corner
+//   pros::delay(1000);
+
+//   chassis.pid_turn_set({23.33,-0.90}, fwd,TURN_SPEED); // Turn to put the goal down a bit away
+//   chassis.pid_wait();
+//   clamp_piston.set_value(false); // release the first goal
+//   intake_motor.move(0);
+//   conveyor_motor.move(0);
+
+//   GATR_TurnAndMove({-17.8,-17},rev); // Drive to the alliance stake goal in rev
+//   clamp_piston.set_value(true); // grab the alliance stake goal
+
+//   chassis.pid_swing_set(LEFT_SWING, 0, SWING_SPEED);
+
+//   intake_motor.move(127);
+//   conveyor_motor.move(127);
+//   GATR_TurnAndMove({-24.86,-2.71},fwd); // Get alliance stake ring
+
+//   GATR_TurnAndMove({-68.91,-17.94},fwd); // Move and get the positive corner ring
+
+//   chassis.pid_odom_set({{-40,-17.94}, rev, DRIVE_SPEED},true); // Pull out for 24
+//   pros::delay(2000);
+
+//   GATR_TurnAndMove({-78.7,-5.30},rev); // Go to corner
+//   clamp_piston.set_value(false); // release the second goal
+
+//   pros::delay(1000);
+
+//   climber_motors.move(-25);
+//   // GATR_TurnAndMove({-26,-53},fwd); // Hit ladder
+//   chassis.pid_turn_set({-26, -52}, fwd, TURN_SPEED/2); // Turn to ladder
+//   chassis.pid_wait();
+//   chassis.pid_odom_set({{-26, -52}, fwd, (DRIVE_SPEED/2)}, true); // Drive to ladder slow
+//   chassis.pid_wait();
+//   climber_motors.move(0);
+// }
+
+// void OuterRoute(){
+//   chassis.pid_odom_set({{0,-5}, rev, DRIVE_SPEED},true);
+//   chassis.pid_wait();
+
+//   GATR_TurnAndMove({20,-54},rev);
+//   clamp_piston.set_value(true);
+
+//   chassis.pid_odom_set({{9.5,-24.7}, fwd, DRIVE_SPEED},true);
+//   chassis.pid_wait();
+
+//   AC_RouteLaterHalf();
+
+// }
+
+// void UnderRoute(){
+//   chassis.pid_odom_set({{0,-35}, rev, DRIVE_SPEED},true); // Pull up a bit
+//   chassis.pid_wait();
+
+//   chassis.pid_odom_set({{0,-28}, fwd, DRIVE_SPEED},true); // Pull back
+//   chassis.pid_wait();
+
+//   GATR_TurnAndMove({-17,-53},rev); // Drive to mid goal and clamp
+//   clamp_piston.set_value(true);
+
+//   AC_RouteLaterHalf();
+// }
+
+void LaterHalf(double RedOrBlue = 1){
   intake_motor.move(127);
   conveyor_motor.move(127);
-  GATR_TurnAndMove({23,-17},fwd); // Score first donut nearest to the negative corner
-  pros::delay(1000);
+  GATR_TurnAndMove({23*RedOrBlue,-17},fwd); // Score first donut nearest to the negative corner
+  pros::delay(250);
 
-  chassis.pid_turn_set({23.33,-0.90}, fwd,TURN_SPEED); // Turn to put the goal down a bit away
+  chassis.pid_turn_set({23.33*RedOrBlue,-0.90}, fwd,TURN_SPEED); // Turn to put the goal down a bit away
   chassis.pid_wait();
   clamp_piston.set_value(false); // release the first goal
   intake_motor.move(0);
   conveyor_motor.move(0);
 
-  GATR_TurnAndMove({-17.8,-17},rev); // Drive to the alliance stake goal in rev
+  GATR_TurnAndMove({-18.5*RedOrBlue,-17},rev); // Drive to the alliance stake goal in rev 17.8*RedOrBlue,-17
   clamp_piston.set_value(true); // grab the alliance stake goal
 
   chassis.pid_swing_set(LEFT_SWING, 0, SWING_SPEED);
 
   intake_motor.move(127);
   conveyor_motor.move(127);
-  GATR_TurnAndMove({-24.86,-2.71},fwd); // Get alliance stake ring
+  GATR_TurnAndMove({-24.86*RedOrBlue,-2.71},fwd); // Get alliance stake ring
 
-  GATR_TurnAndMove({-68.91,-17.94},fwd); // Move and get the positive corner ring
+  GATR_TurnAndMove({-68.91*RedOrBlue,-17.94},fwd); // Move and get the positive corner ring
+  
+  // chassis.pid_odom_set({{-18*RedOrBlue,-17.94}, rev, DRIVE_SPEED},true); // Pull out for 24
+  pros::delay(2000);
 
-  GATR_TurnAndMove({-78.7,-5.30},rev); // Move and get the positive corner ring
+  GATR_TurnAndMove({-78.7*RedOrBlue,-5.30},rev); // Go to corner
   clamp_piston.set_value(false); // release the second goal
 
-  pros::delay(2000);
+  pros::delay(500);
+  intake_motor.move(0);
+  conveyor_motor.move(0);
+  climber_motors.move(-25); // Put Climbers up slow
+  GATR_TurnAndMove({-26*RedOrBlue,-52},fwd,TURN_SPEED/2, DRIVE_SPEED/2); // Hit Ladder Slow
+  climber_motors.move(0);
+  pros::delay(250);
+  
 }
 
-void OuterRoute(){
-  chassis.pid_odom_set({{0,-5}, rev, DRIVE_SPEED},true);
+void OuterRoute(double RedOrBlue = 1){
+  chassis.pid_odom_set({{0*RedOrBlue,-5}, rev, DRIVE_SPEED},true);
   chassis.pid_wait();
 
-  GATR_TurnAndMove({20,-54},rev);
+  GATR_TurnAndMove({(20*RedOrBlue),-54},rev);
   clamp_piston.set_value(true);
 
-  chassis.pid_odom_set({{9.5,-24.7}, fwd, DRIVE_SPEED},true);
+  chassis.pid_odom_set({{9.5*RedOrBlue,-24.7}, fwd, DRIVE_SPEED},true);
   chassis.pid_wait();
 
-  AC_RouteLaterHalf();
-
+  LaterHalf(RedOrBlue);
 }
 
-void UnderRoute(){
-  chassis.pid_odom_set({{0,-35}, rev, DRIVE_SPEED},true); // Pull up a bit
+void UnderRoute(double RedOrBlue = 1){ // RED IS 1 BLUE IS -1
+  chassis.pid_odom_set({{0*RedOrBlue,-35}, rev, DRIVE_SPEED},true); // Pull up a bit
   chassis.pid_wait();
 
-  chassis.pid_odom_set({{0,-28}, fwd, DRIVE_SPEED},true); // Pull back
+  chassis.pid_odom_set({{0*RedOrBlue,-28}, fwd, DRIVE_SPEED},true); // Pull back
   chassis.pid_wait();
 
-  GATR_TurnAndMove({-17,-53},rev); // Drive to mid goal and clamp
-  chassis.pid_odom_set({-3, rev, DRIVE_SPEED},true); // Pull back
+  if(RedOrBlue == 1){
+    GATR_TurnAndMove({-17,-53},rev); // Drive to mid goal and clamp RED
+  }
+  else{
+    GATR_TurnAndMove({15.85,-53.5},rev); // Drive to mid goal and clamp BLUE
+  }
   clamp_piston.set_value(true);
+  
+  intake_motor.move(127);
+  conveyor_motor.move(127);
+  pros::delay(3000);
 
-  AC_RouteLaterHalf();
+  LaterHalf(RedOrBlue);
+
 }
 
 ///
