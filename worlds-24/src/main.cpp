@@ -274,13 +274,15 @@ void ez_template_extras() {
   AboveDunked,
   Dunked,
   Manual,
-  AllianceAboveDunked
+  AllianceAboveDunked,
+  None
  };
 
  LB_Mode mode = LB_Mode::Down;
  
  int defaultOpControlSpeed;
  int offset = 100;
+ double conveyorBackOut = -600;
 
  // L2 prepare LB
 
@@ -347,21 +349,29 @@ void opcontrol() {
         ladybrown_motors.move_absolute(0,123);
         break;
       case LB_Mode::Primed:
-        ladybrown_motors.move_absolute(170+offset,123);
+        ladybrown_motors.move_absolute(140+offset,123);
         break;
       case LB_Mode::AboveDunked:
+        conveyor_motor.move_relative(conveyorBackOut, -200);
         ladybrown_motors.move_absolute(1300+offset,123);
+        pros::delay(100);
         break;
       case LB_Mode::Dunked:
+        conveyor_motor.move_relative(conveyorBackOut, -200);
         ladybrown_motors.move_absolute(1900+offset,123);
+        pros::delay(100);
         break;
       case LB_Mode::AllianceAboveDunked:
+        conveyor_motor.move_relative(conveyorBackOut, -200);
         ladybrown_motors.move_absolute(1600+offset,123);
+        pros::delay(100);
         break;
       case LB_Mode::Manual:
         if(master.get_digital(DIGITAL_UP)==1) ladybrown_motors.move(50);
         else if (master.get_digital(DIGITAL_DOWN)==1) ladybrown_motors.move(-50);
         else ladybrown_motors.move(0);
+      case LB_Mode::None:
+        break;
       break;
 
       // if (master.get_digital(DIGITAL_LEFT)==1) ladybrown_motors.tare_position_all();
@@ -410,5 +420,6 @@ void opcontrol() {
       chassis.opcontrol_arcade_standard(ez::SPLIT);   // Standard split arcade
 
       pros::delay(ez::util::DELAY_TIME);  // This is used for timer calculations!  Keep this ez::util::DELAY_TIME
+      mode = LB_Mode::None;
     }
   } 
