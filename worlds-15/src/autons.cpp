@@ -213,8 +213,15 @@ void LaterHalf(double RedOrBlue = 1){
   intake_motor.move(0);
   conveyor_motor.move(0);
 
-  GATR_TurnAndMove({-18.5*RedOrBlue,-17},rev); // Drive to the alliance stake goal in rev 17.8*RedOrBlue,-17
+  // GATR_TurnAndMove({-19.5*RedOrBlue,-17},rev); // Drive to the alliance stake goal in rev 17.8*RedOrBlue,-17
+
+  chassis.pid_turn_set({-17.8*RedOrBlue,-17}, rev, TURN_SPEED);
+  chassis.pid_wait();
+  chassis.pid_odom_set({{-17.8*RedOrBlue,-17}, rev, DRIVE_SPEED},true);
+  chassis.pid_wait();
   clamp_piston.set_value(true); // grab the alliance stake goal
+  chassis.pid_odom_set({{-19.5*RedOrBlue,-17}, rev, DRIVE_SPEED},true); // drive through alliance stake goal
+  chassis.pid_wait();
 
   chassis.pid_swing_set(LEFT_SWING, 0, SWING_SPEED);
 
@@ -233,9 +240,9 @@ void LaterHalf(double RedOrBlue = 1){
   pros::delay(500);
   intake_motor.move(0);
   conveyor_motor.move(0);
-  climber_motors.move(-25); // Put Climbers up slow
+  // climber_motors.move(-25); // Put Climbers up slow
   GATR_TurnAndMove({-26*RedOrBlue,-52},fwd,TURN_SPEED/2, DRIVE_SPEED/2); // Hit Ladder Slow
-  climber_motors.move(0);
+  // climber_motors.move(0);
   pros::delay(250);
   
 }

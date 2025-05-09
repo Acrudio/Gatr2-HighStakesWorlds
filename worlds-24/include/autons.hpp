@@ -17,6 +17,7 @@ void SwingPID_Tune();
 void TurnPID_Tune_LeftPoint();
 
 void OuterRush();
+void BlueOuterRush();
 
 void drive_example();
 void turn_example();

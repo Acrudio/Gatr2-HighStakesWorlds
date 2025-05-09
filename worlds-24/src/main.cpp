@@ -68,7 +68,8 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-    {"24 Auton\n\nGrabs the outer goal", OuterRush},
+    {"24 Auton\n\nBlue Grabs the outer goal", BlueOuterRush},  
+    {"24 Auton\n\nRed Grabs the outer goal", OuterRush},
     {"Turn PID Tuning\n\nMoves the bot to {-24,0}", TurnBiasPID_Tune},
     {"Turn PID Tuning\n\nTurns the bot to {-24,0}", TurnPID_Tune_LeftPoint},
     {"Swing PID Tuning\n\nSwings the bot 90deg", SwingPID_Tune},

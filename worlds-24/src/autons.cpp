@@ -107,8 +107,8 @@ void OuterRush(){
 
   // GATR_TurnAndMove({.02, 12}, fwd); // Drive to close
   chassis.pid_drive_constants_set(30, 0, 5);         // Fwd/rev constants, used for odom and non odom motions 
-  chassis.pid_odom_set({{.02, 12}, fwd, 127});
-  chassis.pid_wait_until(9.25); // 9.25
+  chassis.pid_odom_set({{.015, 12}, fwd, 127});
+  chassis.pid_wait_until(10); // 9.25
 
   default_constants();
 
@@ -120,7 +120,7 @@ void OuterRush(){
   chassis.pid_drive_set(-17.5,DRIVE_SPEED); // Run away with our goal
   chassis.pid_wait();
 
-  chassis.pid_odom_set(5, 50); // bump the goal a little
+  chassis.pid_odom_set(3.7, 50); // bump the goal a little initial 4, second 3.5
   chassis.pid_wait();
   chassis.pid_swing_set(RIGHT_SWING, -17.20, 35); // Move it with intake
   chassis.pid_wait();
@@ -133,16 +133,20 @@ void OuterRush(){
   chassis.pid_wait_quick();
 
 
-  chassis.pid_turn_relative_set(90,50);
+  chassis.pid_turn_relative_set(90,50); // turn 90 to goal
   chassis.pid_wait();
-  chassis.pid_turn_relative_set(90,50);
+  chassis.pid_odom_set(3, 127); // move forward to allign a tiny bit
+  chassis.pid_wait();
+  chassis.pid_turn_relative_set(90,50); // finish 180 turn
   chassis.pid_wait();
   chassis.pid_drive_constants_set(30, 0, 5);
-  chassis.pid_odom_set(-10, 127);
+  chassis.pid_odom_set(-10, 100);
   chassis.pid_wait();
   default_constants();
 
+  pros::delay(250);
   clamp_piston.set_value(true); // Clamp our goal!
+  pros::delay(250);
   chassis.pid_odom_set(5, 127); // push forward a bit
   chassis.pid_wait();
 
@@ -150,25 +154,30 @@ void OuterRush(){
   conveyor_motor.move(127);
   intake_motor.move(127);
 
-  pros::delay(10000);
+  pros::delay(5000);
   conveyor_motor.move(0);
   intake_motor.move(0);
   // clamp_piston.set_value(false); // release goal
 
-  doinker_pistion.set_value(true);
+  // doinker_pistion.set_value(true);
 
   // // corner clear
   // chassis.pid_turn_set(103.34, fwd, 50);
   // chassis.pid_wait();
-  // chassis.pid_drive_set(30,75);
+  // pros::delay(2000);
+  // chassis.pid_odom_set(30,75);
   // chassis.pid_wait();
+  // pros::delay(2000);
   // chassis.pid_turn_set(200.4,50); // x:160.4
   // chassis.pid_wait();
+  // pros::delay(2000);
 
-  // // Touch the ladder
-  GATR_TurnAndMove({-8.21,7.21}, fwd, false);
-  chassis.pid_drive_set(15,75);
-  chassis.pid_wait();
+  // Touch the ladder
+  GATR_TurnAndMove({-12,7.21}, fwd);
+  // chassis.pid_drive_set(15,75);
+  // chassis.pid_wait();
+
+  //GATR_TurnAndMove({17,10.5}, fwd); // get out da way
 
   // chassis.pid_drive_set(5,75);
   // chassis.pid_wait();
@@ -178,6 +187,79 @@ void OuterRush(){
   // chassis.pid_wait();
   // chassis.pid_drive_set(10,50);
   // chassis.pid_wait();
+  pros::delay(250);
+}
+
+
+void BlueOuterRush(){
+  chassis.pid_targets_reset();                // Resets PID targets to 0
+  chassis.drive_imu_reset();                  // Reset gyro position to 0
+  chassis.drive_sensor_reset();               // Reset drive sensors to 0
+  chassis.odom_xyt_set(0_in, 0_in, 0_deg);    // Set the current position, you can start at a specific position with this
+  chassis.drive_brake_set(MOTOR_BRAKE_COAST);  // Set motors to hold.  This helps autonomous consistency
+
+
+  // GATR_TurnAndMove({.02, 12}, fwd); // Drive to close
+  chassis.pid_drive_constants_set(30, 0, 5);         // Fwd/rev constants, used for odom and non odom motions 
+  chassis.pid_odom_set({{.015, 15.5}, fwd, 127});
+  chassis.pid_wait_until(13.2); 
+
+  default_constants();
+
+  doinker_pistion.set_value(true);
+  chassis.pid_swing_set(LEFT_SWING,30,SWING_SPEED); // Swing and grab the goal
+  chassis.drive_brake_set(MOTOR_BRAKE_HOLD);  // Set motors to hold.  This helps autonomous consistency
+  chassis.pid_wait_quick();
+  
+  chassis.pid_drive_set(-18,DRIVE_SPEED); // Run away with our goal
+  chassis.pid_wait();
+
+
+  chassis.pid_odom_set(3.5, 50); // bump the goal a little initial 4, second 3.5
+  chassis.pid_wait();
+  chassis.pid_turn_relative_set(-40,50); // turn to remove
+  chassis.pid_wait();
+  doinker_pistion.set_value(false);
+  chassis.pid_odom_set(-8.5, 127); // back up
+  chassis.pid_wait();
+
+  // Touch the ladder
+  GATR_TurnAndMove({10.5,12.8}, fwd);
+ 
+  // chassis.pid_odom_set(-7, 50); // Back up from goal to get away
+  // chassis.pid_wait_quick();
+
+
+  // chassis.pid_turn_relative_set(90,50); // turn 90 to goal
+  // chassis.pid_wait();
+  // chassis.pid_odom_set(3, 127); // move forward to allign a tiny bit
+  // chassis.pid_wait();
+  // chassis.pid_turn_relative_set(90,50); // finish 180 turn
+  // chassis.pid_wait();
+  // chassis.pid_drive_constants_set(30, 0, 5);
+  // chassis.pid_odom_set(-10, 100);
+  // chassis.pid_wait();
+  // default_constants();
+
+  // pros::delay(250);
+  // clamp_piston.set_value(true); // Clamp our goal!
+  // pros::delay(250);
+  // chassis.pid_odom_set(5, 127); // push forward a bit
+  // chassis.pid_wait();
+
+  // // Give the clamp a chance!
+  // conveyor_motor.move(127);
+  // intake_motor.move(127);
+
+  // pros::delay(5000);
+  // conveyor_motor.move(0);
+  // intake_motor.move(0);
+  // // clamp_piston.set_value(false); // release goal
+
+
+
+
+  pros::delay(1500); 
 }
 
 void oldRoute(){

@@ -48,6 +48,10 @@ ez::tracking_wheel horiz_tracker(1, wheelDiameter, 0);  // This tracking wheel i
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
+
+bool climber_latch = 0;
+bool climber_on = 1;  // PTO disengaged is 1, engaged is 0
+
 void initialize() {
   // Print our branding over your terminal :D
   ez::ez_template_print();
@@ -79,8 +83,8 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-    {"15 Red Under Route\n\nRushes for the Under Goal", []() -> void {return UnderRoute(1); }},    
     {"15 Red Outer Route\n\nRushes for the Outer Goal", []() -> void {return OuterRoute(1);}},
+    {"15 Red Under Route\n\nRushes for the Under Goal", []() -> void {return UnderRoute(1); }},    
       {"15 Blue Under Route\n\nRushes for the Under Goal", []() -> void {return UnderRoute(-1);}},
       {"15 Blue Outer Route\n\nRushes for the Outer Goal", []() -> void {return OuterRoute(-1);}},
       {"Final Demo Route\n\nMoves in an L shape", FinalDemoRoute},
@@ -97,6 +101,9 @@ void initialize() {
   chassis.initialize();
   ez::as::initialize();
   master.rumble(chassis.drive_imu_calibrated() ? "." : "---");
+
+  climber_on = 1; // ENSURE THAT PTO IS DISENGAGED
+  climber_piston.set_value(climber_on); // PTO will be default out, so need to disengage
 }
 
 /**
@@ -259,11 +266,6 @@ void ez_template_extras() {
  * task, not resume it from where it left off.
  */
 
-
-
- bool climber_latch = 0;
- bool climber_on = 0;
-
  bool piston_latch = 0;
  bool piston_on = 0;
 
@@ -281,7 +283,7 @@ void opcontrol() {
   while (true) {
       // Gives you some extras to make EZ-Template ezier
       ez_template_extras();
-      
+    
       // Conveyor & Intake Control
       if(master.get_digital(DIGITAL_L2)==1 || master.get_digital(DIGITAL_L1)==1){
         intakeDir = master.get_digital(DIGITAL_L2)==1 ? 1 : -1;
@@ -303,19 +305,19 @@ void opcontrol() {
         conveyor_motor.move(0);
       }
 
-      // TEMPORARY Climber Motor Control
-      if (master.get_digital(DIGITAL_UP)==1){
-        climber_motors.move(-127);
-        chassis.drive_set(-127,-127);
-      }
-      else if (master.get_digital(DIGITAL_DOWN) == 1){
-        climber_motors.move(127);
-        chassis.drive_set(127,127);
+      // // TEMPORARY Climber Motor Control
+      // if (master.get_digital(DIGITAL_UP)==1){
+      //   climber_motors.move(-127);
+      //   chassis.drive_set(-127,-127);
+      // }
+      // else if (master.get_digital(DIGITAL_DOWN) == 1){
+      //   climber_motors.move(127);
+      //   chassis.drive_set(127,127);
 
-      }
-      else{
-        climber_motors.move(0);
-      }
+      // }
+      // else{
+      //   climber_motors.move(0);
+      // }
 
       // // Climber Piston
       // if(master.get_digital(DIGITAL_B)==1){
