@@ -83,18 +83,18 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-    {"15 Red Outer Route\n\nRushes for the Outer Goal", []() -> void {return OuterRoute(1);}},
-    {"15 Red Under Route\n\nRushes for the Under Goal", []() -> void {return UnderRoute(1); }},    
-      {"15 Blue Under Route\n\nRushes for the Under Goal", []() -> void {return UnderRoute(-1);}},
-      {"15 Blue Outer Route\n\nRushes for the Outer Goal", []() -> void {return OuterRoute(-1);}},
-      {"Final Demo Route\n\nMoves in an L shape", FinalDemoRoute},
-      {"Drive PID Tuning\n\nRotates the bot with PID 90 degrees", TurnPID_Tune_90},
-      {"Turn PID Tuning\n\nTurns the bot to {-24,0}", TurnPID_Tune_LeftPoint},
-      {"Swing PID Tuning\n\nSwings the bot 90deg", SwingPID_Tune},
-      {"Drive PID Tuning\n\nRotates the bot with PID 180 degrees.", TurnPID_Tune_180},
-      {"Drive PID Tuning\n\nDrives the bot forwards 5 inches at max speed.", DrivePID_Tune_5},
-      {"Drive PID Tuning\n\nDrives the bot forwards 10 inches at max speed.", DrivePID_Tune_10},
-      {"Drive PID Tuning\n\nDrives the bot forwards 60 inches at max speed.", DrivePID_Tune_20},
+      // {"15 Blue Outer Route\n\nRushes for the Outer Goal", []() -> void {return OuterRoute(-1);}},
+      // {"15 Red Outer Route\n\nRushes for the Outer Goal", []() -> void {return OuterRoute(1);}},
+      // {"15 Red Under Route\n\nRushes for the Under Goal", []() -> void {return UnderRoute(1); }},    
+      // {"15 Blue Under Route\n\nRushes for the Under Goal", []() -> void {return UnderRoute(-1);}},
+      // {"Final Demo Route\n\nMoves in an L shape", FinalDemoRoute},
+      // {"Drive PID Tuning\n\nRotates the bot with PID 90 degrees", TurnPID_Tune_90},
+      // {"Turn PID Tuning\n\nTurns the bot to {-24,0}", TurnPID_Tune_LeftPoint},
+      // {"Swing PID Tuning\n\nSwings the bot 90deg", SwingPID_Tune},
+      // {"Drive PID Tuning\n\nRotates the bot with PID 180 degrees.", TurnPID_Tune_180},
+      // {"Drive PID Tuning\n\nDrives the bot forwards 5 inches at max speed.", DrivePID_Tune_5},
+      // {"Drive PID Tuning\n\nDrives the bot forwards 10 inches at max speed.", DrivePID_Tune_10},
+      // {"Drive PID Tuning\n\nDrives the bot forwards 60 inches at max speed.", DrivePID_Tune_20},
   });
 
   // Initialize chassis and auton selector
@@ -158,8 +158,9 @@ void autonomous() {
   You can do cool curved motions, but you have to give your robot the best chance
   to be consistent
   */
-
-  ez::as::auton_selector.selected_auton_call();  // Calls selected auton from autonomous selector
+  climber_on = 1; // ENSURE THAT PTO IS DISENGAGED
+  climber_piston.set_value(climber_on); // PTO will be default out, so need to disengage
+  ez::as::auton_selector.selected_auton_call();  // Calls selected auton frozzm autonomous selector
 }
 
 /**
@@ -305,43 +306,43 @@ void opcontrol() {
         conveyor_motor.move(0);
       }
 
-      // // TEMPORARY Climber Motor Control
-      // if (master.get_digital(DIGITAL_UP)==1){
-      //   climber_motors.move(-127);
-      //   chassis.drive_set(-127,-127);
-      // }
-      // else if (master.get_digital(DIGITAL_DOWN) == 1){
-      //   climber_motors.move(127);
-      //   chassis.drive_set(127,127);
+      // TEMPORARY Climber Motor Control
+      if (master.get_digital(DIGITAL_UP)==1){
+        climber_motors.move(-127);
+        chassis.drive_set(-127,-127);
+      }
+      else if (master.get_digital(DIGITAL_DOWN) == 1){
+        climber_motors.move(127);
+        chassis.drive_set(127,127);
 
-      // }
-      // else{
-      //   climber_motors.move(0);
-      // }
+      }
+      else{
+        climber_motors.move(0);
+      }
 
-      // // Climber Piston
-      // if(master.get_digital(DIGITAL_B)==1){
-      //   if(!climber_latch){
-      //     climber_on = !climber_on;
-      //     climber_latch = true;
-      //   }
-      // }
-      // else{
-      //   climber_latch = false;
-      // }
-      // climber_piston.set_value(climber_on);
+      // Climber Piston
+      if(master.get_digital(DIGITAL_B)==1){
+        if(!climber_latch){
+          climber_on = !climber_on;
+          climber_latch = true;
+        }
+      }
+      else{
+        climber_latch = false;
+      }
+      climber_piston.set_value(climber_on);
 
-      // // Passive Hook Piston
-      // if(master.get_digital(DIGITAL_A)==1){
-      //   if(!passiveHook_latch){
-      //     passiveHook_on = !passiveHook_on;
-      //     passiveHook_latch = true;
-      //   }
-      // }
-      // else{
-      //   passiveHook_latch = false;
-      // }
-      // passiveHook_piston.set_value(passiveHook_on);
+      // Passive Hook Piston
+      if(master.get_digital(DIGITAL_A)==1){
+        if(!passiveHook_latch){
+          passiveHook_on = !passiveHook_on;
+          passiveHook_latch = true;
+        }
+      }
+      else{
+        passiveHook_latch = false;
+      }
+      passiveHook_piston.set_value(passiveHook_on);
 
       // Clamp Piston
       if(master.get_digital(DIGITAL_Y)==1){
