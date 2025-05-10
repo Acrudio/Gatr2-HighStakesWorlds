@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "Red_Under_Gatr2-Worlds-15",
+    "project_name": "15_Blue_Safe",
     "target": "v5",
     "templates": {
       "EZ-Template": {
@@ -425,7 +425,7 @@
     },
     "upload_options": {
       "description": "roboticsisez.com",
-      "slot": 4,
+      "slot": 1,
       "icon": "X"
     },
     "use_early_access": false

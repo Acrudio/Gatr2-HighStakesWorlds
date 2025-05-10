@@ -83,7 +83,7 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-      // {"15 Blue Outer Route\n\nRushes for the Outer Goal", []() -> void {return OuterRoute(-1);}},
+      {"15 Blue SAFE\n\nRushes for the Outer Goal", []() -> void {return SafeRun_15(false);}},
       // {"15 Red Outer Route\n\nRushes for the Outer Goal", []() -> void {return OuterRoute(1);}},
       // {"15 Red Under Route\n\nRushes for the Under Goal", []() -> void {return UnderRoute(1); }},    
       // {"15 Blue Under Route\n\nRushes for the Under Goal", []() -> void {return UnderRoute(-1);}},

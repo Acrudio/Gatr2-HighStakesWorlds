@@ -134,6 +134,58 @@ void FinalDemoRoute(){
   chassis.pid_wait();
 }
 
+void SafeRun_15(bool _isRed){
+  double mult = _isRed ? 1 : -1;
+
+  GATR_TurnAndMove({0*mult, -13.4}, rev); // Move out
+  GATR_TurnAndMove({-15.5*mult, -16.6}, rev); // Turn 90 and go to goal
+  clamp_piston.set_value(true); // pickup goal
+
+  intake_motor.move(127);
+  conveyor_motor.move(127);
+  GATR_TurnAndMove({23.6*mult,-15.9}, fwd); // Score first ring
+  GATR_TurnAndMove({-21.6*mult,-6.3}, fwd); // Score second ring
+  GATR_TurnAndMove({-65.8*mult,-16.9}, fwd); // Score last ring
+  GATR_TurnAndMove({-76.9*mult,-10.8}, rev); // Goal ram
+  intake_motor.move(0);
+  conveyor_motor.move(0);
+
+  if(!_isRed){
+    chassis.pid_turn_set(219.93, 127);
+    chassis.pid_wait();
+  }
+  clamp_piston.set_value(false); // drop goal
+  chassis.pid_drive_set(5, 70); // Back out 
+  chassis.pid_wait();
+  chassis.pid_drive_set(-7, 127); // Bump
+  chassis.pid_wait();
+
+  if(!_isRed){
+    chassis.pid_turn_set(180, 127);
+    chassis.pid_wait();
+  }
+}
+
+void Red_Safe(){
+  GATR_TurnAndMove({0, -14}, rev); // Move out
+  GATR_TurnAndMove({-15.5, -16.6}, rev); // Turn 90 and go to goal
+  clamp_piston.set_value(true); // pickup goal
+
+  intake_motor.move(127);
+  conveyor_motor.move(127);
+  GATR_TurnAndMove({23.6,-15.9}, fwd); // Score first ring
+  GATR_TurnAndMove({-21.6,-6.3}, fwd); // Score second ring
+  GATR_TurnAndMove({-65.8,-16.9}, fwd); // Score last ring
+  GATR_TurnAndMove({-76.9,-10.8}, rev); // Goal ram
+  intake_motor.move(0);
+  conveyor_motor.move(0);
+
+  clamp_piston.set_value(false); // drop goal
+  chassis.pid_drive_set(-5, 70); // Back out 
+  chassis.pid_drive_set(7, 127); // Bump
+
+}
+
 
 void LaterHalf(double RedOrBlue = 1){
   intake_motor.move(127);

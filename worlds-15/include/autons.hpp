@@ -12,6 +12,9 @@ void TurnPID_Tune_180();
 void FinalDemoRoute();
 void SwingPID_Tune();
 
+void SafeRun_15(bool);
+void Red_Safe();
+
 void TurnPID_Tune_LeftPoint();
 void OuterRoute(double);
 void UnderRoute(double);
