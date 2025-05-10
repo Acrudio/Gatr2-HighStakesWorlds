@@ -36,6 +36,8 @@ ez::tracking_wheel vert_right_tracker(7, wheelDiameter, vert_distToCenter);   //
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
+
+ void nothing(){}
 void initialize() {
   // Print our branding over your terminal :D
   ez::ez_template_print();
@@ -68,16 +70,9 @@ void initialize() {
 
   // Autonomous Selector using LLEMU
   ez::as::auton_selector.autons_add({
-    {"24 Auton\n\nBlue Grabs the outer goal", BlueOuterRush},  
     {"24 Auton\n\nRed Grabs the outer goal", OuterRush},
-    {"Turn PID Tuning\n\nMoves the bot to {-24,0}", TurnBiasPID_Tune},
-    {"Turn PID Tuning\n\nTurns the bot to {-24,0}", TurnPID_Tune_LeftPoint},
-    {"Swing PID Tuning\n\nSwings the bot 90deg", SwingPID_Tune},
-    {"Drive PID Tuning\n\nRotates the bot with PID 90 degrees", TurnPID_Tune_90},
-    {"Drive PID Tuning\n\nRotates the bot with PID 180 degrees.", TurnPID_Tune_180},
-    {"Drive PID Tuning\n\nDrives the bot forwards 5 inches at max speed.", DrivePID_Tune_5},
-    {"Drive PID Tuning\n\nDrives the bot forwards 10 inches at max speed.", DrivePID_Tune_10},
-    {"Drive PID Tuning\n\nDrives the bot forwards 60 inches at max speed.", DrivePID_Tune_20},
+        // {"24 Auton\n\nRed Grabs the outer goal", BlueOuterRush},
+
   });
 
   // Initialize chassis and auton selector
@@ -90,7 +85,7 @@ void initialize() {
   // Custom IMU
   // dummyIMU.reset(true);
 
-  printf("IMU Heading: %.3f",dummyIMU.get_heading());
+  // printf("IMU Heading: %.3f",dummyIMU.get_heading());k
 
 }
 
@@ -276,6 +271,7 @@ void ez_template_extras() {
   Dunked,
   Manual,
   AllianceAboveDunked,
+  Descore,
   None
  };
 
@@ -284,7 +280,10 @@ void ez_template_extras() {
  int defaultOpControlSpeed;
  int offset = 100;
  double conveyorBackOut = -600;
-
+ bool canTare = true;
+ bool switchedToManual = false;
+ float LB_Target = 0;
+ float incrementSpeed = 5;
  // L2 prepare LB
 
 void opcontrol() {
@@ -293,7 +292,17 @@ void opcontrol() {
   defaultOpControlSpeed = chassis.opcontrol_speed_max_get();
 
   while (true) {
-    printf("IMU Heading: %.3f",dummyIMU.get_heading()); // debugging the dummy imu
+    // printf("IMU Heading: %.3f",dummyIMU.get_heading()); // debugging the dummy imu
+      // if (master.get_digital(DIGITAL_UP)==1) {
+      //   if(canTare){
+      //     canTare = false;
+      //     ladybrown_motors.tare_position_all();
+      //     ladybrown_motors.move(0);
+          
+      //   }
+      // }
+      // else canTare = true;
+      printf("\nLB Target: %.3f", LB_Target);
 
       if(intakeDir == -1) intakeNConveyor = false;
 
@@ -340,8 +349,17 @@ void opcontrol() {
       else if (master.get_digital(DIGITAL_A)==1) mode = LB_Mode::Primed;
       else if (master.get_digital(DIGITAL_X)==1) mode = LB_Mode::AboveDunked;
       else if (master.get_digital(DIGITAL_Y)==1) mode = LB_Mode::Dunked;
-      // else if (master.get_digital(DIGITAL_UP)==1 || master.get_digital(DIGITAL_DOWN)==1) mode = LB_Mode::Manual;
       else if (master.get_digital(DIGITAL_RIGHT)==1) mode = LB_Mode::AllianceAboveDunked;
+      else if (master.get_digital(DIGITAL_LEFT)==1) mode = LB_Mode::Descore;
+
+      else if (master.get_digital(DIGITAL_DOWN)==1 || master.get_digital(DIGITAL_UP)==1){
+         mode = LB_Mode::Manual;
+         if(!switchedToManual){
+            switchedToManual = true;
+            LB_Target = ladybrown_motors.get_position();
+         }
+      }
+      else if (master.get_digital(DIGITAL_DOWN)!=1 && master.get_digital(DIGITAL_UP)!=1) switchedToManual = false;
 
 
       switch (mode)
@@ -350,11 +368,11 @@ void opcontrol() {
         ladybrown_motors.move_absolute(0,123);
         break;
       case LB_Mode::Primed:
-        ladybrown_motors.move_absolute(140+offset,123);
+        ladybrown_motors.move_absolute((140+offset)*0.97,123);
         break;
       case LB_Mode::AboveDunked:
         conveyor_motor.move_relative(conveyorBackOut, -200);
-        ladybrown_motors.move_absolute(1300+offset,123);
+        ladybrown_motors.move_absolute(1200+offset,123);
         pros::delay(100);
         break;
       case LB_Mode::Dunked:
@@ -362,36 +380,41 @@ void opcontrol() {
         ladybrown_motors.move_absolute(1900+offset,123);
         pros::delay(100);
         break;
+      case LB_Mode::Descore:
+        conveyor_motor.move_relative(conveyorBackOut, -200);
+        ladybrown_motors.move_absolute(1500+offset,123);
+        pros::delay(100);
+      break;
       case LB_Mode::AllianceAboveDunked:
         conveyor_motor.move_relative(conveyorBackOut, -200);
         ladybrown_motors.move_absolute(1600+offset,123);
         pros::delay(100);
         break;
       case LB_Mode::Manual:
-        if(master.get_digital(DIGITAL_UP)==1) ladybrown_motors.move(50);
-        else if (master.get_digital(DIGITAL_DOWN)==1) ladybrown_motors.move(-50);
-        else ladybrown_motors.move(0);
+        if(master.get_digital(DIGITAL_UP)==1) LB_Target += incrementSpeed;
+        if (master.get_digital(DIGITAL_DOWN)==1) LB_Target -= incrementSpeed;
+        ladybrown_motors.move_absolute(LB_Target,123);
       case LB_Mode::None:
         break;
       break;
 
-      // if (master.get_digital(DIGITAL_LEFT)==1) ladybrown_motors.tare_position_all();
+      
       
       default:
         break;
       }
 
-      // PTO Piston
-      if(master.get_digital(DIGITAL_UP)==1){
-        if(!climber_latch){
-          climber_on = !climber_on;
-          climber_latch = true;
-        }
-      }
-      else{
-        climber_latch = false;
-      }
-      climber_piston.set_value(climber_on);
+      // // PTO Piston
+      // if(master.get_digital(DIGITAL_UP)==1){
+      //   if(!climber_latch){
+      //     climber_on = !climber_on;
+      //     climber_latch = true;
+      //   }
+      // }
+      // else{
+      //   climber_latch = false;
+      // }
+      // climber_piston.set_value(climber_on);
 
       // Clamp Piston
       if(master.get_digital(DIGITAL_R2)==1){
@@ -410,6 +433,7 @@ void opcontrol() {
         if(!doinker){
           doinker = true;
           doinker_on = !doinker_on;
+
         }
       }
       else{

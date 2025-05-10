@@ -305,43 +305,43 @@ void opcontrol() {
         conveyor_motor.move(0);
       }
 
-      // // TEMPORARY Climber Motor Control
-      // if (master.get_digital(DIGITAL_UP)==1){
-      //   climber_motors.move(-127);
-      //   chassis.drive_set(-127,-127);
-      // }
-      // else if (master.get_digital(DIGITAL_DOWN) == 1){
-      //   climber_motors.move(127);
-      //   chassis.drive_set(127,127);
+      // TEMPORARY Climber Motor Control
+      if (master.get_digital(DIGITAL_UP)==1){
+        climber_motors.move(-127);
+        chassis.drive_set(-127,-127);
+      }
+      else if (master.get_digital(DIGITAL_DOWN) == 1){
+        climber_motors.move(127);
+        chassis.drive_set(127,127);
 
-      // }
-      // else{
-      //   climber_motors.move(0);
-      // }
+      }
+      else{
+        climber_motors.move(0);
+      }
 
-      // // Climber Piston
-      // if(master.get_digital(DIGITAL_B)==1){
-      //   if(!climber_latch){
-      //     climber_on = !climber_on;
-      //     climber_latch = true;
-      //   }
-      // }
-      // else{
-      //   climber_latch = false;
-      // }
-      // climber_piston.set_value(climber_on);
+      // Climber Piston
+      if(master.get_digital(DIGITAL_B)==1){
+        if(!climber_latch){
+          climber_on = !climber_on;
+          climber_latch = true;
+        }
+      }
+      else{
+        climber_latch = false;
+      }
+      climber_piston.set_value(climber_on);
 
-      // // Passive Hook Piston
-      // if(master.get_digital(DIGITAL_A)==1){
-      //   if(!passiveHook_latch){
-      //     passiveHook_on = !passiveHook_on;
-      //     passiveHook_latch = true;
-      //   }
-      // }
-      // else{
-      //   passiveHook_latch = false;
-      // }
-      // passiveHook_piston.set_value(passiveHook_on);
+      // Passive Hook Piston
+      if(master.get_digital(DIGITAL_A)==1){
+        if(!passiveHook_latch){
+          passiveHook_on = !passiveHook_on;
+          passiveHook_latch = true;
+        }
+      }
+      else{
+        passiveHook_latch = false;
+      }
+      passiveHook_piston.set_value(passiveHook_on);
 
       // Clamp Piston
       if(master.get_digital(DIGITAL_Y)==1){
